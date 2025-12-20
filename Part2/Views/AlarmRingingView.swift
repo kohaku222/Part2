@@ -108,25 +108,62 @@ struct AlarmRingingView: View {
     }
 
     private func playAlarmSound() {
-        // システムのアラーム音を再生
+        // オーディオセッションを設定（バックグラウンド再生 + サイレントモード無視）
+        do {
+            let audioSession = AVAudioSession.sharedInstance()
+            try audioSession.setCategory(.playback, mode: .default, options: [])
+            try audioSession.setActive(true)
+            print("オーディオセッション設定完了")
+        } catch {
+            print("オーディオセッション設定エラー: \(error.localizedDescription)")
+        }
+
+        // アラーム音を再生
         guard let url = Bundle.main.url(forResource: "alarm", withExtension: "mp3") else {
-            // デフォルトのシステム音を使用
-            AudioServicesPlaySystemSound(SystemSoundID(1005))
+            // デフォルトのシステム音を繰り返し再生
+            playSystemSoundLoop()
             return
         }
 
         do {
             audioPlayer = try AVAudioPlayer(contentsOf: url)
             audioPlayer?.numberOfLoops = -1 // 無限ループ
+            audioPlayer?.volume = 1.0 // 最大音量
             audioPlayer?.play()
+            print("アラーム音再生開始")
         } catch {
             print("アラーム音再生エラー: \(error.localizedDescription)")
+            playSystemSoundLoop()
+        }
+    }
+
+    // システム音を繰り返し再生（alarm.mp3がない場合のフォールバック）
+    private func playSystemSoundLoop() {
+        // 1秒ごとにシステム音を鳴らす
+        Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
+            if self.isAnimating {
+                AudioServicesPlaySystemSound(SystemSoundID(1005))
+            } else {
+                timer.invalidate()
+            }
         }
     }
 
     private func stopAlarm() {
         audioPlayer?.stop()
+        audioPlayer = nil
         isAnimating = false
+
+        // オーディオセッションを非アクティブに
+        do {
+            try AVAudioSession.sharedInstance().setActive(false)
+        } catch {
+            print("オーディオセッション停止エラー: \(error.localizedDescription)")
+        }
+
+        // 繰り返し通知をキャンセル
+        NotificationManager.shared.cancelAllAlarms()
+        print("アラーム停止完了")
     }
 }
 

@@ -78,16 +78,27 @@ class NotificationManager: NSObject, ObservableObject, UNUserNotificationCenterD
 
         guard alarm.isEnabled else { return }
 
-        let content = UNMutableNotificationContent()
-        content.title = "⏰ モチベーション目覚まし"
-        content.body = alarm.label ?? "起きる時間です！"
-        content.sound = UNNotificationSound.default
-        content.badge = 1
-
         // 時刻からトリガーを作成
         let calendar = Calendar.current
         let hour = calendar.component(.hour, from: alarm.time)
         let minute = calendar.component(.minute, from: alarm.time)
+
+        // メインのアラーム通知
+        scheduleMainAlarm(alarmId: alarm.id.uuidString, hour: hour, minute: minute, label: alarm.label)
+
+        // 繰り返し通知（1分おきに10回）- タスクキルされても通知が届く
+        scheduleRepeatedNotifications(alarmId: alarm.id.uuidString, hour: hour, minute: minute)
+
+        print("アラームをスケジュール: \(hour):\(minute)（繰り返し通知含む）")
+    }
+
+    // メインのアラーム通知
+    private func scheduleMainAlarm(alarmId: String, hour: Int, minute: Int, label: String?) {
+        let content = UNMutableNotificationContent()
+        content.title = "⏰ 起きまsho"
+        content.body = label ?? "起きる時間です！"
+        content.sound = UNNotificationSound.default
+        content.badge = 1
 
         var dateComponents = DateComponents()
         dateComponents.hour = hour
@@ -96,16 +107,60 @@ class NotificationManager: NSObject, ObservableObject, UNUserNotificationCenterD
         let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
 
         let request = UNNotificationRequest(
-            identifier: alarm.id.uuidString,
+            identifier: alarmId,
             content: content,
             trigger: trigger
         )
 
         UNUserNotificationCenter.current().add(request) { error in
             if let error = error {
-                print("通知スケジュールエラー: \(error.localizedDescription)")
-            } else {
-                print("アラームをスケジュール: \(hour):\(minute)")
+                print("メイン通知スケジュールエラー: \(error.localizedDescription)")
+            }
+        }
+    }
+
+    // 繰り返し通知をスケジュール（しつこく通知を送り続ける）
+    private func scheduleRepeatedNotifications(alarmId: String, hour: Int, minute: Int) {
+        let messages = [
+            "まだ寝てる？起きて！",
+            "QRをスキャンして！",
+            "起きないと止まりません！",
+            "おーい！起きろー！",
+            "二度寝禁止！",
+            "今日も頑張ろう！",
+            "起きてスキャン！",
+            "まだ？？",
+            "起きまsho！！",
+            "本当に起きて！"
+        ]
+
+        for i in 1...10 {
+            let content = UNMutableNotificationContent()
+            content.title = "⏰ 起きまsho"
+            content.body = messages[i - 1]
+            content.sound = UNNotificationSound.default
+            content.badge = NSNumber(value: i)
+
+            // 1分ごとに通知
+            var dateComponents = DateComponents()
+            dateComponents.hour = hour
+            let newMinute = (minute + i) % 60
+            let hourOffset = (minute + i) / 60
+            dateComponents.minute = newMinute
+            dateComponents.hour = (hour + hourOffset) % 24
+
+            let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
+
+            let request = UNNotificationRequest(
+                identifier: "\(alarmId)_repeat_\(i)",
+                content: content,
+                trigger: trigger
+            )
+
+            UNUserNotificationCenter.current().add(request) { error in
+                if let error = error {
+                    print("繰り返し通知\(i)エラー: \(error.localizedDescription)")
+                }
             }
         }
     }
@@ -113,8 +168,13 @@ class NotificationManager: NSObject, ObservableObject, UNUserNotificationCenterD
     // MARK: - アラーム通知をキャンセル
 
     func cancelAlarm(id: String) {
-        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [id])
-        print("アラームをキャンセル: \(id)")
+        // メイン通知と繰り返し通知を全てキャンセル
+        var identifiers = [id]
+        for i in 1...10 {
+            identifiers.append("\(id)_repeat_\(i)")
+        }
+        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: identifiers)
+        print("アラームをキャンセル: \(id)（繰り返し通知含む）")
     }
 
     // MARK: - 全ての通知をキャンセル
