@@ -92,7 +92,9 @@ struct AlarmRingingView: View {
             playAlarmSound()
         }
         .onDisappear {
-            stopAlarm()
+            // タスクキル時は音声のみ停止（通知は継続）
+            // 正式解除時はonStopコールバック経由でdismissAlarm()が呼ばれる
+            stopAudioOnly()
         }
         .sheet(isPresented: $showScanner) {
             CodeScannerView(
@@ -149,7 +151,8 @@ struct AlarmRingingView: View {
         }
     }
 
-    private func stopAlarm() {
+    // 音声のみ停止（通知はキャンセルしない - タスクキル対策）
+    private func stopAudioOnly() {
         audioPlayer?.stop()
         audioPlayer = nil
         isAnimating = false
@@ -160,10 +163,14 @@ struct AlarmRingingView: View {
         } catch {
             print("オーディオセッション停止エラー: \(error.localizedDescription)")
         }
+        print("音声停止（通知は継続）")
+    }
 
-        // 繰り返し通知をキャンセル
-        NotificationManager.shared.cancelAllAlarms()
-        print("アラーム停止完了")
+    // 完全停止（QRスキャン成功時 or QR未設定時の停止ボタン）
+    private func stopAlarm() {
+        stopAudioOnly()
+        // 通知のキャンセルはPart2App側のdismissAlarm()で行う
+        print("アラーム完全停止")
     }
 }
 

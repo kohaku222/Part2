@@ -13,8 +13,7 @@ struct Part2App: App {
     @StateObject private var notificationManager = NotificationManager.shared
     @StateObject private var alarmStorage = AlarmStorage.shared
 
-    // アラームフロー状態管理
-    @State private var showAlarmRinging = false
+    // モチベーション再生状態
     @State private var showMotivationPlayback = false
 
     var body: some Scene {
@@ -24,9 +23,11 @@ struct Part2App: App {
                     .environmentObject(notificationManager)
 
                 // アラーム鳴動画面（フルスクリーンオーバーレイ）
-                if showAlarmRinging, let alarm = alarmStorage.alarm {
+                // isRingingがtrueならタスクキル後も表示
+                if alarmStorage.isRinging, let alarm = alarmStorage.alarm {
                     AlarmRingingView(alarm: alarm) {
-                        showAlarmRinging = false
+                        // アラームが正式に解除された時
+                        alarmStorage.dismissAlarm()
                         // 音声が録音されている場合はモチベーション再生へ
                         if alarm.hasVoiceRecording {
                             showMotivationPlayback = true
@@ -47,15 +48,19 @@ struct Part2App: App {
                     .zIndex(2)
                 }
             }
-            .animation(.easeInOut, value: showAlarmRinging)
+            .animation(.easeInOut, value: alarmStorage.isRinging)
             .animation(.easeInOut, value: showMotivationPlayback)
             .onAppear {
                 // アプリ起動時に通知許可をリクエスト
                 notificationManager.requestAuthorization()
+                // 前回の未解除アラームがあればログ出力
+                if alarmStorage.isRinging {
+                    print("アプリ起動: 未解除のアラームがあります")
+                }
             }
             .onReceive(NotificationCenter.default.publisher(for: .alarmTriggered)) { _ in
-                // アラームがトリガーされた時
-                showAlarmRinging = true
+                // アラームがトリガーされた時 - 状態を保存
+                alarmStorage.triggerAlarm()
             }
         }
     }

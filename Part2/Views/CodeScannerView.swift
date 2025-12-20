@@ -21,95 +21,94 @@ struct CodeScannerView: View {
     @State private var errorMessage = ""
 
     var body: some View {
-        NavigationView {
-            ZStack {
-                // カメラプレビュー
-                CameraPreviewView(scannedCode: $scannedCode, scannedCodeType: $scannedCodeType)
-                    .ignoresSafeArea()
+        ZStack {
+            // カメラプレビュー（全画面）
+            CameraPreviewView(scannedCode: $scannedCode, scannedCodeType: $scannedCodeType)
+                .ignoresSafeArea()
 
-                // オーバーレイ
-                VStack {
-                    Spacer()
-
-                    // スキャンエリアのガイド
-                    RoundedRectangle(cornerRadius: 20)
-                        .stroke(Color.white, lineWidth: 3)
-                        .frame(width: 250, height: 250)
-                        .background(Color.clear)
-
-                    Spacer()
-
-                    // 説明テキスト
-                    VStack(spacing: 12) {
-                        Text(isSetup ? "QRコードまたはバーコードを登録" : "登録したコードをスキャン")
-                            .font(.headline)
-                            .foregroundColor(.white)
-
-                        Text(isSetup
-                            ? "アラーム解除に使用するコードをスキャンしてください"
-                            : "アラームを解除するには登録したコードをスキャンしてください"
-                        )
-                            .font(.subheadline)
-                            .foregroundColor(.white.opacity(0.8))
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal, 40)
-
-                        if let code = scannedCode {
-                            HStack {
-                                Image(systemName: "checkmark.circle.fill")
-                                    .foregroundColor(.green)
-                                Text("検出: \(code.prefix(20))...")
-                                    .foregroundColor(.white)
-                            }
-                            .padding()
-                            .background(Color.black.opacity(0.7))
-                            .cornerRadius(10)
+            // オーバーレイ
+            VStack {
+                // キャンセルボタン
+                HStack {
+                    Button(action: { dismiss() }) {
+                        HStack(spacing: 6) {
+                            Image(systemName: "xmark")
+                                .font(.system(size: 16, weight: .medium))
                         }
+                        .foregroundColor(.white)
+                        .padding(12)
+                        .background(Color.black.opacity(0.5))
+                        .clipShape(Circle())
                     }
-                    .padding(.bottom, 40)
+                    Spacer()
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 60)
 
-                    // 確認ボタン（登録モード時）
-                    if isSetup, let code = scannedCode {
-                        Button(action: {
-                            onScan(code, scannedCodeType)
-                            dismiss()
-                        }) {
-                            Text("このコードを登録")
-                                .font(.headline)
-                                .foregroundColor(.white)
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color.blue)
-                                .cornerRadius(12)
-                        }
+                Spacer()
+
+                // スキャンエリアのガイド（横長の長方形）
+                RoundedRectangle(cornerRadius: 16)
+                    .stroke(Color.white, lineWidth: 3)
+                    .frame(width: 280, height: 180)
+                    .background(Color.clear)
+
+                Spacer()
+
+                // 説明テキスト
+                VStack(spacing: 12) {
+                    Text("スキャンするバーコードまたはQRコードを\n四角に入るように合わせてください。")
+                        .font(.subheadline)
+                        .foregroundColor(.white)
+                        .multilineTextAlignment(.center)
                         .padding(.horizontal, 40)
-                        .padding(.bottom, 20)
+
+                    if let code = scannedCode {
+                        HStack {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundColor(.green)
+                            Text("検出: \(code.prefix(20))...")
+                                .foregroundColor(.white)
+                        }
+                        .padding()
+                        .background(Color.black.opacity(0.7))
+                        .cornerRadius(10)
                     }
                 }
-            }
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("キャンセル") {
-                        dismiss()
-                    }
-                    .foregroundColor(.white)
-                }
-            }
-            .onChange(of: scannedCode) { oldValue, newValue in
-                // 解除モードの場合、登録コードと一致したら自動で閉じる
-                if !isSetup, let code = newValue, let registered = registeredCode {
-                    if code == registered {
+                .padding(.bottom, 40)
+
+                // 確認ボタン（登録モード時）
+                if isSetup, let code = scannedCode {
+                    Button(action: {
                         onScan(code, scannedCodeType)
                         dismiss()
+                    }) {
+                        Text("このコードを登録")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.blue)
+                            .cornerRadius(12)
                     }
+                    .padding(.horizontal, 40)
+                    .padding(.bottom, 20)
                 }
             }
-            .alert("エラー", isPresented: $showError) {
-                Button("OK", role: .cancel) {}
-            } message: {
-                Text(errorMessage)
+        }
+        .onChange(of: scannedCode) { oldValue, newValue in
+            // 解除モードの場合、登録コードと一致したら自動で閉じる
+            if !isSetup, let code = newValue, let registered = registeredCode {
+                if code == registered {
+                    onScan(code, scannedCodeType)
+                    dismiss()
+                }
             }
+        }
+        .alert("エラー", isPresented: $showError) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(errorMessage)
         }
     }
 }

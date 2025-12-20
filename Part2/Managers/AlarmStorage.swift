@@ -11,6 +11,7 @@ class AlarmStorage: ObservableObject {
     static let shared = AlarmStorage()
 
     private let key = "savedAlarm"
+    private let ringingKey = "alarmIsRinging"
 
     @Published var alarm: Alarm? {
         didSet {
@@ -18,8 +19,35 @@ class AlarmStorage: ObservableObject {
         }
     }
 
+    // アラームが鳴っている状態（タスクキルしても保持）
+    @Published var isRinging: Bool = false {
+        didSet {
+            UserDefaults.standard.set(isRinging, forKey: ringingKey)
+            print("アラーム鳴動状態: \(isRinging)")
+        }
+    }
+
     private init() {
         loadAlarm()
+        // 鳴動状態を復元
+        isRinging = UserDefaults.standard.bool(forKey: ringingKey)
+        if isRinging {
+            print("前回のアラームが未解除です")
+        }
+    }
+
+    // MARK: - アラーム発火
+    func triggerAlarm() {
+        isRinging = true
+    }
+
+    // MARK: - アラーム解除（QRスキャン成功時のみ呼ぶ）
+    func dismissAlarm() {
+        isRinging = false
+        // 通知をキャンセル
+        NotificationManager.shared.cancelAllAlarms()
+        NotificationManager.shared.clearBadge()
+        print("アラームを正式に解除しました")
     }
 
     // MARK: - 保存

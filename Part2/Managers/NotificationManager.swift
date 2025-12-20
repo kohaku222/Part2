@@ -119,7 +119,7 @@ class NotificationManager: NSObject, ObservableObject, UNUserNotificationCenterD
         }
     }
 
-    // 繰り返し通知をスケジュール（しつこく通知を送り続ける）
+    // 繰り返し通知をスケジュール（しつこく通知を送り続ける - 30秒間隔で60回 = 30分間）
     private func scheduleRepeatedNotifications(alarmId: String, hour: Int, minute: Int) {
         let messages = [
             "まだ寝てる？起きて！",
@@ -131,25 +131,51 @@ class NotificationManager: NSObject, ObservableObject, UNUserNotificationCenterD
             "起きてスキャン！",
             "まだ？？",
             "起きまsho！！",
-            "本当に起きて！"
+            "本当に起きて！",
+            "しつこいよ〜",
+            "まだ寝てるの？",
+            "QRスキャンまで止まらない！",
+            "起きて起きて！",
+            "目を開けて！"
         ]
 
-        for i in 1...10 {
+        // テスト用: 5秒間隔で60通知 = 5分間
+        // 本番用: 30秒間隔に戻す
+        let intervalSeconds = 5.0  // TODO: 本番では30.0に変更
+
+        // アラーム時刻を計算（次の発火時刻）
+        let calendar = Calendar.current
+        var alarmDateComponents = DateComponents()
+        alarmDateComponents.hour = hour
+        alarmDateComponents.minute = minute
+        alarmDateComponents.second = 0
+
+        guard let alarmDate = calendar.nextDate(after: Date(), matching: alarmDateComponents, matchingPolicy: .nextTime) else {
+            print("アラーム時刻の計算に失敗")
+            return
+        }
+
+        // アラーム時刻までの秒数を計算
+        let secondsUntilAlarm = alarmDate.timeIntervalSince(Date())
+        print("アラームまで \(Int(secondsUntilAlarm)) 秒")
+
+        for i in 1...60 {
             let content = UNMutableNotificationContent()
-            content.title = "⏰ 起きまsho"
-            content.body = messages[i - 1]
+            content.title = "⏰ 起きまsho (\(i)/60)"
+            content.body = messages[i % messages.count]
             content.sound = UNNotificationSound.default
             content.badge = NSNumber(value: i)
 
-            // 1分ごとに通知
-            var dateComponents = DateComponents()
-            dateComponents.hour = hour
-            let newMinute = (minute + i) % 60
-            let hourOffset = (minute + i) / 60
-            dateComponents.minute = newMinute
-            dateComponents.hour = (hour + hourOffset) % 24
+            // アラーム時刻 + (i * 間隔) 秒後に通知
+            let totalSecondsFromNow = secondsUntilAlarm + (Double(i) * intervalSeconds)
 
-            let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
+            // 最低1秒以上必要
+            guard totalSecondsFromNow > 1 else {
+                print("通知\(i)はスキップ（時間が過ぎている）")
+                continue
+            }
+
+            let trigger = UNTimeIntervalNotificationTrigger(timeInterval: totalSecondsFromNow, repeats: false)
 
             let request = UNNotificationRequest(
                 identifier: "\(alarmId)_repeat_\(i)",
@@ -163,18 +189,21 @@ class NotificationManager: NSObject, ObservableObject, UNUserNotificationCenterD
                 }
             }
         }
+
+        print("繰り返し通知60回（\(Int(intervalSeconds))秒間隔）をスケジュール完了")
     }
 
     // MARK: - アラーム通知をキャンセル
 
     func cancelAlarm(id: String) {
-        // メイン通知と繰り返し通知を全てキャンセル
+        // メイン通知と繰り返し通知（60回）を全てキャンセル
         var identifiers = [id]
-        for i in 1...10 {
+        for i in 1...60 {
             identifiers.append("\(id)_repeat_\(i)")
         }
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: identifiers)
-        print("アラームをキャンセル: \(id)（繰り返し通知含む）")
+        UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: identifiers)
+        print("アラームをキャンセル: \(id)（繰り返し通知60回含む）")
     }
 
     // MARK: - 全ての通知をキャンセル
