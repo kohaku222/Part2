@@ -13,9 +13,10 @@ struct CodeScannerView: View {
 
     var isSetup: Bool // true: 登録モード, false: 解除モード
     var registeredCode: String? // 登録済みのコード（解除モード時に使用）
-    var onScan: (String) -> Void
+    var onScan: (String, String) -> Void  // (code, codeType)
 
     @State private var scannedCode: String?
+    @State private var scannedCodeType: String = ""
     @State private var showError = false
     @State private var errorMessage = ""
 
@@ -23,7 +24,7 @@ struct CodeScannerView: View {
         NavigationView {
             ZStack {
                 // カメラプレビュー
-                CameraPreviewView(scannedCode: $scannedCode)
+                CameraPreviewView(scannedCode: $scannedCode, scannedCodeType: $scannedCodeType)
                     .ignoresSafeArea()
 
                 // オーバーレイ
@@ -70,7 +71,7 @@ struct CodeScannerView: View {
                     // 確認ボタン（登録モード時）
                     if isSetup, let code = scannedCode {
                         Button(action: {
-                            onScan(code)
+                            onScan(code, scannedCodeType)
                             dismiss()
                         }) {
                             Text("このコードを登録")
@@ -99,7 +100,7 @@ struct CodeScannerView: View {
                 // 解除モードの場合、登録コードと一致したら自動で閉じる
                 if !isSetup, let code = newValue, let registered = registeredCode {
                     if code == registered {
-                        onScan(code)
+                        onScan(code, scannedCodeType)
                         dismiss()
                     }
                 }
@@ -117,6 +118,7 @@ struct CodeScannerView: View {
 
 struct CameraPreviewView: UIViewControllerRepresentable {
     @Binding var scannedCode: String?
+    @Binding var scannedCodeType: String
 
     func makeUIViewController(context: Context) -> CameraViewController {
         let controller = CameraViewController()
@@ -137,9 +139,10 @@ struct CameraPreviewView: UIViewControllerRepresentable {
             self.parent = parent
         }
 
-        func didScanCode(_ code: String) {
+        func didScanCode(_ code: String, codeType: String) {
             DispatchQueue.main.async {
                 self.parent.scannedCode = code
+                self.parent.scannedCodeType = codeType
             }
         }
     }
@@ -148,7 +151,7 @@ struct CameraPreviewView: UIViewControllerRepresentable {
 // MARK: - カメラViewController
 
 protocol CameraViewControllerDelegate: AnyObject {
-    func didScanCode(_ code: String)
+    func didScanCode(_ code: String, codeType: String)
 }
 
 class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
@@ -226,7 +229,10 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
         // バイブレーション
         AudioServicesPlaySystemSound(SystemSoundID(kSystemSoundID_Vibrate))
 
-        delegate?.didScanCode(code)
+        // コードタイプを取得（例: org.iso.QRCode, org.gs1.EAN-13 など）
+        let codeType = metadataObject.type.rawValue
+
+        delegate?.didScanCode(code, codeType: codeType)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -236,7 +242,7 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
 }
 
 #Preview {
-    CodeScannerView(isSetup: true, registeredCode: nil) { code in
-        print("Scanned: \(code)")
+    CodeScannerView(isSetup: true, registeredCode: nil) { code, codeType in
+        print("Scanned: \(code), Type: \(codeType)")
     }
 }

@@ -24,6 +24,10 @@
 		4D7D8DDC2EF6A8600075D61D /* AlarmStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7D8DD82EF6A8600075D61D /* AlarmStorage.swift */; };
 		4D7D8DDD2EF6A8600075D61D /* AudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7D8DD92EF6A8600075D61D /* AudioManager.swift */; };
 		4D7D8DDE2EF6A8600075D61D /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7D8DDA2EF6A8600075D61D /* NotificationManager.swift */; };
+		4D7D8DE22EF6F91F0075D61D /* SavedCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7D8DE12EF6F91F0075D61D /* SavedCode.swift */; };
+		4D7D8DE42EF6F9300075D61D /* SavedCodeStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7D8DE32EF6F9300075D61D /* SavedCodeStorage.swift */; };
+		4D7D8DE62EF6F9420075D61D /* SavedCodeListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7D8DE52EF6F9420075D61D /* SavedCodeListView.swift */; };
+		4D8D902E2EF7052E005CF6DE /* alarm.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 4D8D902D2EF7052E005CF6DE /* alarm.mp3 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -65,6 +69,10 @@
 		4D7D8DD92EF6A8600075D61D /* AudioManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioManager.swift; sourceTree = "<group>"; };
 		4D7D8DDA2EF6A8600075D61D /* NotificationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
 		4D7D8DDF2EF6A8EA0075D61D /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		4D7D8DE12EF6F91F0075D61D /* SavedCode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SavedCode.swift; sourceTree = "<group>"; };
+		4D7D8DE32EF6F9300075D61D /* SavedCodeStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SavedCodeStorage.swift; sourceTree = "<group>"; };
+		4D7D8DE52EF6F9420075D61D /* SavedCodeListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SavedCodeListView.swift; sourceTree = "<group>"; };
+		4D8D902D2EF7052E005CF6DE /* alarm.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = alarm.mp3; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -115,6 +123,7 @@
 		4D7CEF722EF693E200FC721D /* Part2 */ = {
 			isa = PBXGroup;
 			children = (
+				4D8D902D2EF7052E005CF6DE /* alarm.mp3 */,
 				4D7D8DDF2EF6A8EA0075D61D /* Info.plist */,
 				4D7D8DDB2EF6A8600075D61D /* Managers */,
 				4D7D8DD12EF6A8510075D61D /* Views */,
@@ -155,6 +164,7 @@
 		4D7D8DC92EF6A8430075D61D /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				4D7D8DE12EF6F91F0075D61D /* SavedCode.swift */,
 				4D7D8DC82EF6A8430075D61D /* Alarm.swift */,
 			);
 			path = Models;
@@ -163,6 +173,7 @@
 		4D7D8DD12EF6A8510075D61D /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				4D7D8DE52EF6F9420075D61D /* SavedCodeListView.swift */,
 				4D7D8DCB2EF6A8510075D61D /* AlarmCardView.swift */,
 				4D7D8DCC2EF6A8510075D61D /* AlarmRingingView.swift */,
 				4D7D8DCD2EF6A8510075D61D /* CodeScannerView.swift */,
@@ -176,6 +187,7 @@
 		4D7D8DDB2EF6A8600075D61D /* Managers */ = {
 			isa = PBXGroup;
 			children = (
+				4D7D8DE32EF6F9300075D61D /* SavedCodeStorage.swift */,
 				4D7D8DD82EF6A8600075D61D /* AlarmStorage.swift */,
 				4D7D8DD92EF6A8600075D61D /* AudioManager.swift */,
 				4D7D8DDA2EF6A8600075D61D /* NotificationManager.swift */,
@@ -289,6 +301,7 @@
 			files = (
 				4D7CEF7B2EF693E400FC721D /* Preview Assets.xcassets in Resources */,
 				4D7CEF782EF693E400FC721D /* Assets.xcassets in Resources */,
+				4D8D902E2EF7052E005CF6DE /* alarm.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -318,9 +331,12 @@
 				4D7CEF762EF693E200FC721D /* ContentView.swift in Sources */,
 				4D7D8DD72EF6A8510075D61D /* VoiceRecorderView.swift in Sources */,
 				4D7CEF742EF693E200FC721D /* Part2App.swift in Sources */,
+				4D7D8DE62EF6F9420075D61D /* SavedCodeListView.swift in Sources */,
 				4D7D8DDD2EF6A8600075D61D /* AudioManager.swift in Sources */,
+				4D7D8DE42EF6F9300075D61D /* SavedCodeStorage.swift in Sources */,
 				4D7D8DCA2EF6A8430075D61D /* Alarm.swift in Sources */,
 				4D7D8DDC2EF6A8600075D61D /* AlarmStorage.swift in Sources */,
+				4D7D8DE22EF6F91F0075D61D /* SavedCode.swift in Sources */,
 				4D7D8DD32EF6A8510075D61D /* AlarmRingingView.swift in Sources */,
 				4D7D8DDE2EF6A8600075D61D /* NotificationManager.swift in Sources */,
 				4D7D8DD62EF6A8510075D61D /* TimeDisplayView.swift in Sources */,
@@ -488,6 +504,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Part2/Preview Content\"";
+				DEVELOPMENT_TEAM = Z88Q4TCA6M;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Part2/Info.plist;
@@ -517,6 +534,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Part2/Preview Content\"";
+				DEVELOPMENT_TEAM = Z88Q4TCA6M;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Part2/Info.plist;

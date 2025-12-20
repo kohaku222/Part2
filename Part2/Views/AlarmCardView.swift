@@ -13,6 +13,13 @@ struct AlarmCardView: View {
     var onDelete: () -> Void
     var onRecordVoice: () -> Void
     var onSetupQR: () -> Void
+    var onEditTime: () -> Void
+
+    // 保存されたコード名を取得
+    private var savedCodeName: String? {
+        guard let qrCode = alarm.qrCode else { return nil }
+        return SavedCodeStorage.shared.findCode(by: qrCode)?.name
+    }
 
     var body: some View {
         VStack(spacing: 16) {
@@ -31,18 +38,26 @@ struct AlarmCardView: View {
                             .foregroundColor(alarm.isEnabled ? .blue : .gray)
                     }
 
-                    // 時刻表示
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(alarm.timeString)
-                            .font(.system(size: 36, weight: .light, design: .rounded))
-                            .monospacedDigit()
+                    // 時刻表示（タップで編集）
+                    Button(action: onEditTime) {
+                        VStack(alignment: .leading, spacing: 4) {
+                            HStack(spacing: 4) {
+                                Text(alarm.timeString)
+                                    .font(.system(size: 36, weight: .light, design: .rounded))
+                                    .monospacedDigit()
+                                Image(systemName: "pencil")
+                                    .font(.system(size: 12))
+                                    .foregroundColor(.secondary)
+                            }
 
-                        if let label = alarm.label {
-                            Text(label)
-                                .font(.caption)
-                                .foregroundColor(.secondary)
+                            if let label = alarm.label {
+                                Text(label)
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
                         }
                     }
+                    .buttonStyle(.plain)
                 }
 
                 Spacer()
@@ -83,8 +98,9 @@ struct AlarmCardView: View {
                     HStack(spacing: 8) {
                         Image(systemName: "qrcode")
                             .font(.system(size: 14))
-                        Text(alarm.hasQRCode ? "QR設定済み" : "QRを登録")
+                        Text(qrButtonLabel)
                             .font(.subheadline)
+                            .lineLimit(1)
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 12)
@@ -119,6 +135,17 @@ struct AlarmCardView: View {
         )
     }
 
+    // QRボタンのラベル
+    private var qrButtonLabel: String {
+        if let name = savedCodeName {
+            return name
+        } else if alarm.hasQRCode {
+            return "QR設定済み"
+        } else {
+            return "QRを登録"
+        }
+    }
+
     // 設定状態に応じたメッセージ
     private var statusMessage: String {
         if !alarm.hasVoiceRecording && !alarm.hasQRCode {
@@ -140,7 +167,8 @@ struct AlarmCardView: View {
             onToggle: {},
             onDelete: {},
             onRecordVoice: {},
-            onSetupQR: {}
+            onSetupQR: {},
+            onEditTime: {}
         )
 
         // 全て設定済み
@@ -155,7 +183,8 @@ struct AlarmCardView: View {
             onToggle: {},
             onDelete: {},
             onRecordVoice: {},
-            onSetupQR: {}
+            onSetupQR: {},
+            onEditTime: {}
         )
     }
     .padding()

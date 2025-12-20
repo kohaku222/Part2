@@ -98,7 +98,7 @@ struct AlarmRingingView: View {
             CodeScannerView(
                 isSetup: false,
                 registeredCode: alarm.qrCode
-            ) { code in
+            ) { code, _ in
                 if code == alarm.qrCode {
                     stopAlarm()
                     onStop()

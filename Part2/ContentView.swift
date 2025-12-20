@@ -12,6 +12,7 @@ struct ContentView: View {
     @StateObject private var alarmStorage = AlarmStorage.shared
 
     @State private var showSetAlarm = false
+    @State private var showEditAlarm = false
     @State private var showRecordVoice = false
     @State private var showQRScanner = false
 
@@ -61,7 +62,8 @@ struct ContentView: View {
                                 onToggle: toggleAlarm,
                                 onDelete: deleteAlarm,
                                 onRecordVoice: { showRecordVoice = true },
-                                onSetupQR: { showQRScanner = true }
+                                onSetupQR: { showQRScanner = true },
+                                onEditTime: { showEditAlarm = true }
                             )
                         } else {
                             emptyStateView
@@ -91,11 +93,13 @@ struct ContentView: View {
             }
         }
         .sheet(isPresented: $showQRScanner) {
-            CodeScannerView(
-                isSetup: true,
-                registeredCode: nil
-            ) { code in
+            SavedCodeListView { code in
                 saveQRCode(code: code)
+            }
+        }
+        .sheet(isPresented: $showEditAlarm) {
+            if let currentTime = alarmStorage.alarm?.time {
+                EditAlarmView(currentTime: currentTime, onSave: updateAlarmTime)
             }
         }
     }
@@ -231,6 +235,17 @@ struct ContentView: View {
             alarm.qrCode = code
         }
     }
+
+    private func updateAlarmTime(newTime: Date) {
+        alarmStorage.updateAlarm { alarm in
+            alarm.time = newTime
+        }
+        // 通知を再スケジュール
+        if let alarm = alarmStorage.alarm, alarm.isEnabled {
+            NotificationManager.shared.scheduleAlarm(for: alarm)
+        }
+        showEditAlarm = false
+    }
 }
 
 // MARK: - アラーム設定画面
@@ -259,6 +274,61 @@ struct SetAlarmView: View {
                     onSave(selectedTime)
                 }) {
                     Text("保存")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.blue)
+                        .cornerRadius(12)
+                }
+                .padding(.horizontal, 40)
+
+                Spacer()
+            }
+            .padding(.top, 40)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("キャンセル") {
+                        dismiss()
+                    }
+                }
+            }
+        }
+    }
+}
+
+// MARK: - アラーム編集画面
+
+struct EditAlarmView: View {
+    @Environment(\.dismiss) var dismiss
+    @State private var selectedTime: Date
+    var onSave: (Date) -> Void
+
+    init(currentTime: Date, onSave: @escaping (Date) -> Void) {
+        _selectedTime = State(initialValue: currentTime)
+        self.onSave = onSave
+    }
+
+    var body: some View {
+        NavigationView {
+            VStack(spacing: 30) {
+                Text("時間を変更")
+                    .font(.title2)
+                    .fontWeight(.semibold)
+
+                DatePicker(
+                    "時刻",
+                    selection: $selectedTime,
+                    displayedComponents: .hourAndMinute
+                )
+                .datePickerStyle(.wheel)
+                .labelsHidden()
+
+                Button(action: {
+                    onSave(selectedTime)
+                }) {
+                    Text("変更を保存")
                         .font(.headline)
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
