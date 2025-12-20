@@ -1,0 +1,163 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap');
+
+@layer base {
+  :root {
+    --background: 222 47% 8%;
+    --foreground: 210 40% 98%;
+
+    --card: 222 47% 11%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222 47% 11%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 16 85% 60%;
+    --primary-foreground: 222 47% 8%;
+    --primary-glow: 16 100% 70%;
+
+    --secondary: 260 30% 20%;
+    --secondary-foreground: 260 30% 90%;
+
+    --muted: 222 30% 18%;
+    --muted-foreground: 215 20% 55%;
+
+    --accent: 260 60% 55%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 222 30% 20%;
+    --input: 222 30% 20%;
+    --ring: 16 85% 60%;
+
+    --radius: 1rem;
+
+    /* Custom design tokens */
+    --gradient-warm: linear-gradient(135deg, hsl(16 85% 60%) 0%, hsl(35 90% 55%) 100%);
+    --gradient-night: linear-gradient(180deg, hsl(222 47% 8%) 0%, hsl(260 40% 12%) 100%);
+    --gradient-glow: radial-gradient(circle at center, hsl(16 85% 60% / 0.3) 0%, transparent 70%);
+    
+    --shadow-glow: 0 0 60px hsl(16 85% 60% / 0.3);
+    --shadow-soft: 0 8px 32px hsl(0 0% 0% / 0.3);
+    
+    --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    --font-display: 'Space Grotesk', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+
+    --sidebar-background: 222 47% 8%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 16 85% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 222 30% 18%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 222 30% 20%;
+    --sidebar-ring: 16 85% 60%;
+  }
+
+  .dark {
+    --background: 222 47% 8%;
+    --foreground: 210 40% 98%;
+    --card: 222 47% 11%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222 47% 11%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 16 85% 60%;
+    --primary-foreground: 222 47% 8%;
+    --secondary: 260 30% 20%;
+    --secondary-foreground: 260 30% 90%;
+    --muted: 222 30% 18%;
+    --muted-foreground: 215 20% 55%;
+    --accent: 260 60% 55%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 222 30% 20%;
+    --input: 222 30% 20%;
+    --ring: 16 85% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-display);
+    background: var(--gradient-night);
+    min-height: 100vh;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+  }
+
+  .font-mono {
+    font-family: var(--font-mono);
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-card/60 backdrop-blur-xl border border-border/50 rounded-2xl;
+  }
+
+  .glow-primary {
+    box-shadow: var(--shadow-glow);
+  }
+
+  .time-display {
+    font-family: var(--font-mono);
+    font-weight: 300;
+    letter-spacing: -0.05em;
+    background: var(--gradient-warm);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .wave-bar {
+    @apply bg-primary rounded-full;
+    animation: wave 1s ease-in-out infinite;
+  }
+
+  @keyframes wave {
+    0%, 100% { transform: scaleY(0.3); }
+    50% { transform: scaleY(1); }
+  }
+
+  .pulse-ring {
+    animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes pulse-ring {
+    0%, 100% { opacity: 0.5; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.05); }
+  }
+
+  .scanner-line {
+    animation: scan 2s ease-in-out infinite;
+  }
+
+  @keyframes scan {
+    0%, 100% { top: 0; }
+    50% { top: calc(100% - 4px); }
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    background: var(--gradient-warm);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}

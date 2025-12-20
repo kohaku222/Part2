@@ -1,0 +1,16 @@
+{
+  "name": "モチベーション目覚まし",
+  "short_name": "目覚まし",
+  "description": "前日の自分からのメッセージで目覚める目覚ましアプリ",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0d1321",
+  "theme_color": "#e8784a",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64",
+      "type": "image/x-icon"
+    }
+  ]
+}
