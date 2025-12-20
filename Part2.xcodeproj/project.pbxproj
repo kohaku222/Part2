@@ -14,6 +14,16 @@
 		4D7CEF852EF693E400FC721D /* Part2Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7CEF842EF693E400FC721D /* Part2Tests.swift */; };
 		4D7CEF8F2EF693E400FC721D /* Part2UITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7CEF8E2EF693E400FC721D /* Part2UITests.swift */; };
 		4D7CEF912EF693E400FC721D /* Part2UITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7CEF902EF693E400FC721D /* Part2UITestsLaunchTests.swift */; };
+		4D7D8DCA2EF6A8430075D61D /* Alarm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7D8DC82EF6A8430075D61D /* Alarm.swift */; };
+		4D7D8DD22EF6A8510075D61D /* AlarmCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7D8DCB2EF6A8510075D61D /* AlarmCardView.swift */; };
+		4D7D8DD32EF6A8510075D61D /* AlarmRingingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7D8DCC2EF6A8510075D61D /* AlarmRingingView.swift */; };
+		4D7D8DD42EF6A8510075D61D /* CodeScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7D8DCD2EF6A8510075D61D /* CodeScannerView.swift */; };
+		4D7D8DD52EF6A8510075D61D /* MotivationPlaybackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7D8DCE2EF6A8510075D61D /* MotivationPlaybackView.swift */; };
+		4D7D8DD62EF6A8510075D61D /* TimeDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7D8DCF2EF6A8510075D61D /* TimeDisplayView.swift */; };
+		4D7D8DD72EF6A8510075D61D /* VoiceRecorderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7D8DD02EF6A8510075D61D /* VoiceRecorderView.swift */; };
+		4D7D8DDC2EF6A8600075D61D /* AlarmStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7D8DD82EF6A8600075D61D /* AlarmStorage.swift */; };
+		4D7D8DDD2EF6A8600075D61D /* AudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7D8DD92EF6A8600075D61D /* AudioManager.swift */; };
+		4D7D8DDE2EF6A8600075D61D /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7D8DDA2EF6A8600075D61D /* NotificationManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,6 +54,17 @@
 		4D7CEF8A2EF693E400FC721D /* Part2UITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Part2UITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4D7CEF8E2EF693E400FC721D /* Part2UITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Part2UITests.swift; sourceTree = "<group>"; };
 		4D7CEF902EF693E400FC721D /* Part2UITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Part2UITestsLaunchTests.swift; sourceTree = "<group>"; };
+		4D7D8DC82EF6A8430075D61D /* Alarm.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Alarm.swift; sourceTree = "<group>"; };
+		4D7D8DCB2EF6A8510075D61D /* AlarmCardView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlarmCardView.swift; sourceTree = "<group>"; };
+		4D7D8DCC2EF6A8510075D61D /* AlarmRingingView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlarmRingingView.swift; sourceTree = "<group>"; };
+		4D7D8DCD2EF6A8510075D61D /* CodeScannerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CodeScannerView.swift; sourceTree = "<group>"; };
+		4D7D8DCE2EF6A8510075D61D /* MotivationPlaybackView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MotivationPlaybackView.swift; sourceTree = "<group>"; };
+		4D7D8DCF2EF6A8510075D61D /* TimeDisplayView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeDisplayView.swift; sourceTree = "<group>"; };
+		4D7D8DD02EF6A8510075D61D /* VoiceRecorderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VoiceRecorderView.swift; sourceTree = "<group>"; };
+		4D7D8DD82EF6A8600075D61D /* AlarmStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlarmStorage.swift; sourceTree = "<group>"; };
+		4D7D8DD92EF6A8600075D61D /* AudioManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioManager.swift; sourceTree = "<group>"; };
+		4D7D8DDA2EF6A8600075D61D /* NotificationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
+		4D7D8DDF2EF6A8EA0075D61D /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,6 +115,10 @@
 		4D7CEF722EF693E200FC721D /* Part2 */ = {
 			isa = PBXGroup;
 			children = (
+				4D7D8DDF2EF6A8EA0075D61D /* Info.plist */,
+				4D7D8DDB2EF6A8600075D61D /* Managers */,
+				4D7D8DD12EF6A8510075D61D /* Views */,
+				4D7D8DC92EF6A8430075D61D /* Models */,
 				4D7CEF732EF693E200FC721D /* Part2App.swift */,
 				4D7CEF752EF693E200FC721D /* ContentView.swift */,
 				4D7CEF772EF693E400FC721D /* Assets.xcassets */,
@@ -125,6 +150,37 @@
 				4D7CEF902EF693E400FC721D /* Part2UITestsLaunchTests.swift */,
 			);
 			path = Part2UITests;
+			sourceTree = "<group>";
+		};
+		4D7D8DC92EF6A8430075D61D /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				4D7D8DC82EF6A8430075D61D /* Alarm.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		4D7D8DD12EF6A8510075D61D /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				4D7D8DCB2EF6A8510075D61D /* AlarmCardView.swift */,
+				4D7D8DCC2EF6A8510075D61D /* AlarmRingingView.swift */,
+				4D7D8DCD2EF6A8510075D61D /* CodeScannerView.swift */,
+				4D7D8DCE2EF6A8510075D61D /* MotivationPlaybackView.swift */,
+				4D7D8DCF2EF6A8510075D61D /* TimeDisplayView.swift */,
+				4D7D8DD02EF6A8510075D61D /* VoiceRecorderView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		4D7D8DDB2EF6A8600075D61D /* Managers */ = {
+			isa = PBXGroup;
+			children = (
+				4D7D8DD82EF6A8600075D61D /* AlarmStorage.swift */,
+				4D7D8DD92EF6A8600075D61D /* AudioManager.swift */,
+				4D7D8DDA2EF6A8600075D61D /* NotificationManager.swift */,
+			);
+			path = Managers;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -257,8 +313,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4D7D8DD42EF6A8510075D61D /* CodeScannerView.swift in Sources */,
+				4D7D8DD22EF6A8510075D61D /* AlarmCardView.swift in Sources */,
 				4D7CEF762EF693E200FC721D /* ContentView.swift in Sources */,
+				4D7D8DD72EF6A8510075D61D /* VoiceRecorderView.swift in Sources */,
 				4D7CEF742EF693E200FC721D /* Part2App.swift in Sources */,
+				4D7D8DDD2EF6A8600075D61D /* AudioManager.swift in Sources */,
+				4D7D8DCA2EF6A8430075D61D /* Alarm.swift in Sources */,
+				4D7D8DDC2EF6A8600075D61D /* AlarmStorage.swift in Sources */,
+				4D7D8DD32EF6A8510075D61D /* AlarmRingingView.swift in Sources */,
+				4D7D8DDE2EF6A8600075D61D /* NotificationManager.swift in Sources */,
+				4D7D8DD62EF6A8510075D61D /* TimeDisplayView.swift in Sources */,
+				4D7D8DD52EF6A8510075D61D /* MotivationPlaybackView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -424,6 +490,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"Part2/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Part2/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -452,6 +519,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"Part2/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Part2/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

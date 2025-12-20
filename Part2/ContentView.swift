@@ -8,8 +8,12 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var alarm: Alarm?
+    @EnvironmentObject var notificationManager: NotificationManager
+    @StateObject private var alarmStorage = AlarmStorage.shared
+
     @State private var showSetAlarm = false
+    @State private var showRecordVoice = false
+    @State private var showQRScanner = false
 
     var body: some View {
         ZStack {
@@ -30,6 +34,13 @@ struct ContentView: View {
                     .padding(.horizontal, 20)
                     .padding(.top, 10)
 
+                // 通知許可の警告（許可されていない場合）
+                if !notificationManager.isAuthorized {
+                    notificationWarningView
+                        .padding(.horizontal, 20)
+                        .padding(.top, 10)
+                }
+
                 // 現在時刻
                 VStack(spacing: 16) {
                     TimeDisplayView(size: .extraLarge)
@@ -44,13 +55,13 @@ struct ContentView: View {
                 // アラーム表示エリア
                 ScrollView {
                     VStack(spacing: 20) {
-                        if let alarm = alarm {
+                        if let alarm = alarmStorage.alarm {
                             AlarmCardView(
                                 alarm: alarm,
                                 onToggle: toggleAlarm,
                                 onDelete: deleteAlarm,
-                                onRecordVoice: { /* TODO: 音声録音画面へ */ },
-                                onSetupQR: { /* TODO: QR設定画面へ */ }
+                                onRecordVoice: { showRecordVoice = true },
+                                onSetupQR: { showQRScanner = true }
                             )
                         } else {
                             emptyStateView
@@ -63,7 +74,7 @@ struct ContentView: View {
             }
 
             // 追加ボタン（アラームがない場合のみ表示）
-            if alarm == nil {
+            if alarmStorage.alarm == nil {
                 VStack {
                     Spacer()
                     addButton
@@ -73,6 +84,19 @@ struct ContentView: View {
         }
         .sheet(isPresented: $showSetAlarm) {
             SetAlarmView(onSave: createAlarm)
+        }
+        .sheet(isPresented: $showRecordVoice) {
+            VoiceRecorderView(existingURL: alarmStorage.alarm?.voiceRecordingURL) { url in
+                saveVoiceRecording(url: url)
+            }
+        }
+        .sheet(isPresented: $showQRScanner) {
+            CodeScannerView(
+                isSetup: true,
+                registeredCode: nil
+            ) { code in
+                saveQRCode(code: code)
+            }
         }
     }
 
@@ -93,6 +117,28 @@ struct ContentView: View {
             Image(systemName: "sparkles")
                 .foregroundColor(.orange)
         }
+    }
+
+    private var notificationWarningView: some View {
+        HStack {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .foregroundColor(.orange)
+            Text("通知が許可されていません")
+                .font(.caption)
+            Spacer()
+            Button("設定") {
+                if let url = URL(string: UIApplication.openSettingsURLString) {
+                    UIApplication.shared.open(url)
+                }
+            }
+            .font(.caption)
+            .foregroundColor(.blue)
+        }
+        .padding(12)
+        .background(
+            RoundedRectangle(cornerRadius: 10)
+                .fill(Color.orange.opacity(0.1))
+        )
     }
 
     private var emptyStateView: some View {
@@ -151,20 +197,43 @@ struct ContentView: View {
     // MARK: - Actions
 
     private func createAlarm(time: Date) {
-        alarm = Alarm(time: time)
+        let newAlarm = Alarm(time: time)
+        alarmStorage.alarm = newAlarm
+        // 通知をスケジュール
+        NotificationManager.shared.scheduleAlarm(for: newAlarm)
         showSetAlarm = false
     }
 
     private func toggleAlarm() {
-        alarm?.isEnabled.toggle()
+        alarmStorage.updateAlarm { alarm in
+            alarm.isEnabled.toggle()
+
+            if alarm.isEnabled {
+                NotificationManager.shared.scheduleAlarm(for: alarm)
+            } else {
+                NotificationManager.shared.cancelAlarm(id: alarm.id.uuidString)
+            }
+        }
     }
 
     private func deleteAlarm() {
-        alarm = nil
+        alarmStorage.deleteAlarm()
+    }
+
+    private func saveVoiceRecording(url: URL) {
+        alarmStorage.updateAlarm { alarm in
+            alarm.voiceRecordingURL = url
+        }
+    }
+
+    private func saveQRCode(code: String) {
+        alarmStorage.updateAlarm { alarm in
+            alarm.qrCode = code
+        }
     }
 }
 
-// MARK: - アラーム設定画面（仮）
+// MARK: - アラーム設定画面
 
 struct SetAlarmView: View {
     @Environment(\.dismiss) var dismiss
@@ -216,4 +285,5 @@ struct SetAlarmView: View {
 
 #Preview {
     ContentView()
+        .environmentObject(NotificationManager.shared)
 }
