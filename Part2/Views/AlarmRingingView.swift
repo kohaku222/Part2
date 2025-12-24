@@ -131,8 +131,8 @@ struct AlarmRingingView: View {
             AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
             print("アラーム音再生開始（SystemSound - 着信/通知音量 + バイブ）")
 
-            // ループ再生（alarm.mp3の長さに合わせて調整 - 約4秒）
-            soundLoopTimer = Timer.scheduledTimer(withTimeInterval: 4.0, repeats: true) { [self] _ in
+            // ループ再生（alarm.mp3の長さに合わせて調整 - 約15.4秒）
+            soundLoopTimer = Timer.scheduledTimer(withTimeInterval: 15.4, repeats: true) { [self] _ in
                 if isAnimating {
                     AudioServicesPlayAlertSound(systemSoundID)
                     AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)

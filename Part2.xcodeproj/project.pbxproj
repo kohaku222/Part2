@@ -27,7 +27,7 @@
 		4D7D8DE22EF6F91F0075D61D /* SavedCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7D8DE12EF6F91F0075D61D /* SavedCode.swift */; };
 		4D7D8DE42EF6F9300075D61D /* SavedCodeStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7D8DE32EF6F9300075D61D /* SavedCodeStorage.swift */; };
 		4D7D8DE62EF6F9420075D61D /* SavedCodeListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7D8DE52EF6F9420075D61D /* SavedCodeListView.swift */; };
-		4D8D902E2EF7052E005CF6DE /* alarm.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 4D8D902D2EF7052E005CF6DE /* alarm.mp3 */; };
+		4DD2B3212EFC2B8B0046973F /* alarm.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 4DD2B3202EFC2B8B0046973F /* alarm.mp3 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -72,7 +72,7 @@
 		4D7D8DE12EF6F91F0075D61D /* SavedCode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SavedCode.swift; sourceTree = "<group>"; };
 		4D7D8DE32EF6F9300075D61D /* SavedCodeStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SavedCodeStorage.swift; sourceTree = "<group>"; };
 		4D7D8DE52EF6F9420075D61D /* SavedCodeListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SavedCodeListView.swift; sourceTree = "<group>"; };
-		4D8D902D2EF7052E005CF6DE /* alarm.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = alarm.mp3; sourceTree = SOURCE_ROOT; };
+		4DD2B3202EFC2B8B0046973F /* alarm.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = alarm.mp3; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -123,7 +123,7 @@
 		4D7CEF722EF693E200FC721D /* Part2 */ = {
 			isa = PBXGroup;
 			children = (
-				4D8D902D2EF7052E005CF6DE /* alarm.mp3 */,
+				4DD2B3202EFC2B8B0046973F /* alarm.mp3 */,
 				4D7D8DDF2EF6A8EA0075D61D /* Info.plist */,
 				4D7D8DDB2EF6A8600075D61D /* Managers */,
 				4D7D8DD12EF6A8510075D61D /* Views */,
@@ -301,7 +301,7 @@
 			files = (
 				4D7CEF7B2EF693E400FC721D /* Preview Assets.xcassets in Resources */,
 				4D7CEF782EF693E400FC721D /* Assets.xcassets in Resources */,
-				4D8D902E2EF7052E005CF6DE /* alarm.mp3 in Resources */,
+				4DD2B3212EFC2B8B0046973F /* alarm.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

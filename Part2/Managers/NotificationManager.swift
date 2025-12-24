@@ -139,9 +139,8 @@ class NotificationManager: NSObject, ObservableObject, UNUserNotificationCenterD
             "目を開けて！"
         ]
 
-        // テスト用: 5秒間隔で60通知 = 5分間
-        // 本番用: 30秒間隔に戻す
-        let intervalSeconds = 5.0  // TODO: 本番では30.0に変更
+        // 15秒間隔で60通知 = 15分間（MP3の長さに合わせる）
+        let intervalSeconds = 15.0
 
         // アラーム時刻を計算（次の発火時刻）
         let calendar = Calendar.current
