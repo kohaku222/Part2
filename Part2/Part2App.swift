@@ -22,6 +22,9 @@ struct Part2App: App {
     @State private var recordingToSaveURL: URL? = nil
     @State private var recordingSaveName = ""
 
+    // 初回セットアップガイド
+    @State private var showSetupGuide = false
+
     var body: some Scene {
         WindowGroup {
             ZStack {
@@ -83,6 +86,17 @@ struct Part2App: App {
                 // 前回の未解除アラームがあればログ出力
                 if alarmStorage.isRinging {
                     print("アプリ起動: 未解除のアラームがあります")
+                }
+                // 初回起動時はセットアップガイドを表示
+                if !UserDefaults.standard.bool(forKey: "hasCompletedSetup") {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        showSetupGuide = true
+                    }
+                }
+            }
+            .fullScreenCover(isPresented: $showSetupGuide) {
+                SetupGuideView {
+                    showSetupGuide = false
                 }
             }
             .onReceive(NotificationCenter.default.publisher(for: .alarmTriggered)) { notification in

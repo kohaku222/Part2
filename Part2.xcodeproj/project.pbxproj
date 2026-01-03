@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4DB1B2B3B4B5B6B700000001 /* SetupGuideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DB1B2B3B4B5B6B700000002 /* SetupGuideView.swift */; };
 		4DA1A2A3A4A5A6A700000001 /* AlarmSoundPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DA1A2A3A4A5A6A700000002 /* AlarmSoundPlayer.swift */; };
 		4D71AD492F09871100A50DC4 /* VolumeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D71AD482F09871100A50DC4 /* VolumeManager.swift */; };
 		4D71AD4F2F09A42000A50DC4 /* alarm.caf in Resources */ = {isa = PBXBuildFile; fileRef = 4D71AD4E2F09A42000A50DC4 /* alarm.caf */; };
@@ -53,6 +54,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4DB1B2B3B4B5B6B700000002 /* SetupGuideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupGuideView.swift; sourceTree = "<group>"; };
 		4DA1A2A3A4A5A6A700000002 /* AlarmSoundPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmSoundPlayer.swift; sourceTree = "<group>"; };
 		4DE0E1E2E3E4E5E600000001 /* Part2.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Part2.entitlements; sourceTree = "<group>"; };
 		4D71AD482F09871100A50DC4 /* VolumeManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VolumeManager.swift; sourceTree = "<group>"; };
@@ -186,6 +188,7 @@
 		4D7D8DD12EF6A8510075D61D /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				4DB1B2B3B4B5B6B700000002 /* SetupGuideView.swift */,
 				4DD2B3262EFC31590046973F /* SavedRecordingListView.swift */,
 				4D7D8DE52EF6F9420075D61D /* SavedCodeListView.swift */,
 				4D7D8DCB2EF6A8510075D61D /* AlarmCardView.swift */,
@@ -358,6 +361,7 @@
 				4D7D8DE22EF6F91F0075D61D /* SavedCode.swift in Sources */,
 				4DD2B3252EFC314E0046973F /* SavedRecordingStorage.swift in Sources */,
 				4DD2B3272EFC31590046973F /* SavedRecordingListView.swift in Sources */,
+				4DB1B2B3B4B5B6B700000001 /* SetupGuideView.swift in Sources */,
 				4D7D8DD32EF6A8510075D61D /* AlarmRingingView.swift in Sources */,
 				4D7D8DDE2EF6A8600075D61D /* NotificationManager.swift in Sources */,
 				4D7D8DD62EF6A8510075D61D /* TimeDisplayView.swift in Sources */,
