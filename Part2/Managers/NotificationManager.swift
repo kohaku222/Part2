@@ -21,7 +21,7 @@ class NotificationManager: NSObject, ObservableObject, UNUserNotificationCenterD
 
     // MARK: - UNUserNotificationCenterDelegate
 
-    // アプリがフォアグラウンドの時も通知を表示
+    // アプリがフォアグラウンドの時の通知処理
     func userNotificationCenter(
         _ center: UNUserNotificationCenter,
         willPresent notification: UNNotification,
@@ -31,7 +31,17 @@ class NotificationManager: NSObject, ObservableObject, UNUserNotificationCenterD
         DispatchQueue.main.async {
             NotificationCenter.default.post(name: .alarmTriggered, object: nil)
         }
-        completionHandler([.banner, .sound, .badge])
+
+        // アプリがフォアグラウンドで動作中（アラーム画面表示中）は通知を抑制
+        // タスクキルされた場合のみ通知が表示される
+        if AlarmStorage.shared.isRinging {
+            // アラーム画面が表示されているので、通知は不要（音もバナーも出さない）
+            print("フォアグラウンド動作中のため通知を抑制")
+            completionHandler([])
+        } else {
+            // アラームが開始された最初の通知のみ表示
+            completionHandler([.banner, .sound, .badge])
+        }
     }
 
     // 通知をタップした時
