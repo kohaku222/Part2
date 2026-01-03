@@ -216,6 +216,8 @@ struct SavedRecordingRow: View {
     var onEdit: () -> Void
     var onDelete: () -> Void
 
+    @State private var showActionSheet = false
+
     var body: some View {
         HStack(spacing: 12) {
             // アイコン
@@ -258,26 +260,23 @@ struct SavedRecordingRow: View {
             }
             .buttonStyle(.plain)
 
-            // 操作ボタン
-            Menu {
-                Button(action: onSelect) {
-                    Label("この録音を使用", systemImage: "checkmark.circle")
-                }
-                Button(action: onEdit) {
-                    Label("名前を変更", systemImage: "pencil")
-                }
-                Button(role: .destructive, action: onDelete) {
-                    Label("削除", systemImage: "trash")
-                }
-            } label: {
+            // 操作ボタン（タップで即座に反応）
+            Button(action: { showActionSheet = true }) {
                 Image(systemName: "ellipsis.circle")
                     .font(.system(size: 22))
                     .foregroundColor(.gray)
             }
+            .buttonStyle(.plain)
         }
         .contentShape(Rectangle())
         .onTapGesture {
             onSelect()
+        }
+        .confirmationDialog("操作を選択", isPresented: $showActionSheet, titleVisibility: .visible) {
+            Button("この録音を使用", action: onSelect)
+            Button("名前を変更", action: onEdit)
+            Button("削除", role: .destructive, action: onDelete)
+            Button("キャンセル", role: .cancel) {}
         }
     }
 }
