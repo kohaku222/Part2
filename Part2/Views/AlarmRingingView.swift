@@ -54,7 +54,10 @@ struct AlarmRingingView: View {
                         Text("QR/バーコードをスキャンして解除")
                             .font(.headline)
 
-                        Button(action: { showScanner = true }) {
+                        Button(action: {
+                            pauseAlarmSound()
+                            showScanner = true
+                        }) {
                             HStack {
                                 Image(systemName: "qrcode.viewfinder")
                                     .font(.system(size: 24))
@@ -98,10 +101,17 @@ struct AlarmRingingView: View {
             // 正式解除時はonStopコールバック経由でdismissAlarm()が呼ばれる
             stopAudioOnly()
         }
-        .sheet(isPresented: $showScanner) {
+        .sheet(isPresented: $showScanner, onDismiss: {
+            // スキャナーが閉じたらアラーム再開（成功時以外）
+            // 注: stopAlarm()が呼ばれた場合はaudioPlayerがnilになっている
+            if audioPlayer != nil {
+                resumeAlarmSound()
+            }
+        }) {
             CodeScannerView(
                 isSetup: false,
-                registeredCode: alarm.qrCode
+                registeredCode: alarm.qrCode,
+                timeLimit: 30
             ) { code, _ in
                 if code == alarm.qrCode {
                     stopAlarm()
@@ -198,6 +208,23 @@ struct AlarmRingingView: View {
         stopAudioOnly()
         // 通知のキャンセルはPart2App側のdismissAlarm()で行う
         print("アラーム完全停止")
+    }
+
+    // 一時停止（QRスキャン中）
+    private func pauseAlarmSound() {
+        audioPlayer?.pause()
+        vibrationTimer?.invalidate()
+        vibrationTimer = nil
+        VolumeManager.shared.stopForceMaxVolume(restoreVolume: false)
+        print("アラーム一時停止")
+    }
+
+    // 再開（QRスキャン失敗/タイムアウト時）
+    private func resumeAlarmSound() {
+        VolumeManager.shared.startForceMaxVolume()
+        audioPlayer?.play()
+        startVibration()
+        print("アラーム再開")
     }
 }
 
