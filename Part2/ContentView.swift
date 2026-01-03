@@ -76,12 +76,9 @@ struct ContentView: View {
                                     onDelete: { deleteAlarm(id: alarm.id) },
                                     onRecordVoice: {
                                         editingAlarmId = alarm.id
-                                        print("onRecordVoice: editingAlarmId set to \(alarm.id)")
                                         if alarm.hasVoiceRecording {
-                                            print("Showing recorded action sheet")
                                             showRecordedActionSheet = true   // 録音済み → 管理メニュー
                                         } else {
-                                            print("Showing voice action sheet")
                                             showVoiceActionSheet = true      // 未録音 → 新規/選択
                                         }
                                     },
@@ -140,11 +137,9 @@ struct ContentView: View {
         // 未録音時の選択シート
         .confirmationDialog("録音方法を選択", isPresented: $showVoiceActionSheet, titleVisibility: .visible) {
             Button("新規録音") {
-                print("新規録音 selected, editingAlarmId: \(editingAlarmId?.uuidString ?? "nil")")
                 showDirectRecorder = true
             }
             Button("保存済みから選択") {
-                print("保存済みから選択 selected, editingAlarmId: \(editingAlarmId?.uuidString ?? "nil")")
                 showRecordingLibrary = true
             }
             Button("キャンセル", role: .cancel) {}
@@ -317,15 +312,9 @@ struct ContentView: View {
     }
 
     private func saveVoiceRecording(url: URL) {
-        print("saveVoiceRecording called with url: \(url)")
-        print("editingAlarmId: \(editingAlarmId?.uuidString ?? "nil")")
-        guard let id = editingAlarmId else {
-            print("ERROR: editingAlarmId is nil!")
-            return
-        }
+        guard let id = editingAlarmId else { return }
         alarmStorage.updateAlarm(id: id) { alarm in
             alarm.voiceRecordingURL = url
-            print("Voice recording URL set for alarm: \(id)")
         }
         editingAlarmId = nil
     }

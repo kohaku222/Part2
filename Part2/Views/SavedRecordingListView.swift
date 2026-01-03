@@ -35,24 +35,9 @@ struct SavedRecordingListView: View {
                                 recording: recording,
                                 isPlaying: playingRecordingId == recording.id && audioManager.isPlaying,
                                 onSelect: {
-                                    print("SavedRecordingRow onSelect called for: \(recording.name)")
-                                    print("recording.fileName: \(recording.fileName)")
-                                    // Documentsディレクトリのファイル一覧を表示
-                                    let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-                                    print("Documents path: \(documentsPath.path)")
-                                    if let files = try? FileManager.default.contentsOfDirectory(atPath: documentsPath.path) {
-                                        print("Files in Documents: \(files)")
-                                    }
-                                    let expectedPath = documentsPath.appendingPathComponent(recording.fileName)
-                                    print("Expected file path: \(expectedPath.path)")
-                                    print("File exists: \(FileManager.default.fileExists(atPath: expectedPath.path))")
-
                                     if let url = recording.fileURL {
-                                        print("Calling onSelect with url: \(url)")
                                         onSelect(url)
                                         dismiss()
-                                    } else {
-                                        print("ERROR: fileURL is nil - file does not exist!")
                                     }
                                 },
                                 onPlay: {
@@ -158,6 +143,10 @@ struct SavedRecordingListView: View {
             }
             .onDisappear {
                 stopPlaybackIfNeeded()
+            }
+            .onAppear {
+                // 表示前に存在しないファイルの録音をクリーンアップ
+                recordingStorage.cleanupMissingFiles()
             }
         }
     }

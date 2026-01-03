@@ -54,7 +54,7 @@ class SavedRecordingStorage: ObservableObject {
 
     // MARK: - ファイルが存在しない録音を削除
 
-    private func cleanupMissingFiles() {
+    func cleanupMissingFiles() {
         let validRecordings = savedRecordings.filter { $0.fileURL != nil }
         if validRecordings.count != savedRecordings.count {
             let removed = savedRecordings.count - validRecordings.count
