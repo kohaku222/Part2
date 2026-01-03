@@ -35,11 +35,15 @@ struct Part2App: App {
                         // アラームが正式に解除された時
                         let hasVoice = alarm.hasVoiceRecording
                         let voiceURL = alarm.voiceRecordingURL
+                        print("🔔 アラーム解除: hasVoice=\(hasVoice), voiceURL=\(voiceURL?.absoluteString ?? "nil")")
                         alarmStorage.dismissAlarm()
                         // 音声が録音されている場合はモチベーション再生へ
                         if hasVoice, let url = voiceURL {
+                            print("🎵 モチベーション再生開始: \(url.lastPathComponent)")
                             dismissedAlarmAudioURL = url
                             showMotivationPlayback = true
+                        } else {
+                            print("⚠️ 音声なし、またはURLがnil")
                         }
                     }
                     .transition(.opacity)
@@ -83,12 +87,17 @@ struct Part2App: App {
             }
             .onReceive(NotificationCenter.default.publisher(for: .alarmTriggered)) { notification in
                 // アラームがトリガーされた時 - 状態を保存
+                print("📲 alarmTriggered通知受信")
                 if let alarmId = notification.userInfo?["alarmId"] as? String,
                    let uuid = UUID(uuidString: alarmId) {
+                    print("📲 アラームID指定: \(alarmId)")
                     alarmStorage.triggerAlarm(id: uuid)
                 } else if let firstAlarm = alarmStorage.alarms.first(where: { $0.isEnabled }) {
                     // フォールバック: 有効な最初のアラームを鳴動
+                    print("📲 フォールバック: \(firstAlarm.id), hasVoice=\(firstAlarm.hasVoiceRecording)")
                     alarmStorage.triggerAlarm(id: firstAlarm.id)
+                } else {
+                    print("⚠️ 有効なアラームが見つからない")
                 }
             }
         }

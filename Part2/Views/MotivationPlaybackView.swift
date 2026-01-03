@@ -108,10 +108,9 @@ struct MotivationPlaybackView: View {
             }
         }
         .onAppear {
-            // 自動再生
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                audioManager.startPlaying(url: audioURL)
-            }
+            print("🎵 MotivationPlaybackView表示: \(audioURL.lastPathComponent)")
+            // 即座に再生開始（遅延なし）
+            setupAndPlay()
         }
         .onDisappear {
             audioManager.stopPlaying()
@@ -124,6 +123,22 @@ struct MotivationPlaybackView: View {
         } else {
             audioManager.startPlaying(url: audioURL)
         }
+    }
+
+    private func setupAndPlay() {
+        // オーディオセッションをプレイバック用に設定（バックグラウンドでも再生可能）
+        do {
+            let session = AVAudioSession.sharedInstance()
+            try session.setCategory(.playback, mode: .default, options: [])
+            try session.setActive(true)
+            print("🎵 オーディオセッション設定完了（playback）")
+        } catch {
+            print("⚠️ オーディオセッション設定エラー: \(error.localizedDescription)")
+        }
+
+        // 即座に再生
+        audioManager.startPlaying(url: audioURL)
+        print("🎵 再生開始: \(audioURL.lastPathComponent)")
     }
 }
 
