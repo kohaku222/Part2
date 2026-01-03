@@ -16,6 +16,9 @@ struct ContentView: View {
     @State private var showRecordVoice = false
     @State private var showQRScanner = false
 
+    // 編集中のアラームIDを追跡
+    @State private var editingAlarmId: UUID? = nil
+
     var body: some View {
         ZStack {
             // 背景グラデーション
@@ -56,32 +59,42 @@ struct ContentView: View {
                 // アラーム表示エリア
                 ScrollView {
                     VStack(spacing: 20) {
-                        if let alarm = alarmStorage.alarm {
-                            AlarmCardView(
-                                alarm: alarm,
-                                onToggle: toggleAlarm,
-                                onDelete: deleteAlarm,
-                                onRecordVoice: { showRecordVoice = true },
-                                onSetupQR: { showQRScanner = true },
-                                onEditTime: { showEditAlarm = true }
-                            )
-                        } else {
+                        if alarmStorage.alarms.isEmpty {
                             emptyStateView
+                        } else {
+                            ForEach(alarmStorage.alarms) { alarm in
+                                AlarmCardView(
+                                    alarm: alarm,
+                                    onToggle: { toggleAlarm(id: alarm.id) },
+                                    onDelete: { deleteAlarm(id: alarm.id) },
+                                    onRecordVoice: {
+                                        editingAlarmId = alarm.id
+                                        showRecordVoice = true
+                                    },
+                                    onSetupQR: {
+                                        editingAlarmId = alarm.id
+                                        showQRScanner = true
+                                    },
+                                    onEditTime: {
+                                        editingAlarmId = alarm.id
+                                        showEditAlarm = true
+                                    }
+                                )
+                            }
                         }
                     }
                     .padding(.horizontal, 20)
+                    .padding(.bottom, 100) // 追加ボタンの余白
                 }
 
                 Spacer()
             }
 
-            // 追加ボタン（アラームがない場合のみ表示）
-            if alarmStorage.alarm == nil {
-                VStack {
-                    Spacer()
-                    addButton
-                        .padding(.bottom, 40)
-                }
+            // 追加ボタン（常に表示）
+            VStack {
+                Spacer()
+                addButton
+                    .padding(.bottom, 40)
             }
         }
         .sheet(isPresented: $showSetAlarm) {
@@ -98,8 +111,9 @@ struct ContentView: View {
             }
         }
         .sheet(isPresented: $showEditAlarm) {
-            if let currentTime = alarmStorage.alarm?.time {
-                EditAlarmView(currentTime: currentTime, onSave: updateAlarmTime)
+            if let id = editingAlarmId,
+               let alarm = alarmStorage.getAlarm(id: id) {
+                EditAlarmView(currentTime: alarm.time, onSave: updateAlarmTime)
             }
         }
     }
@@ -202,14 +216,14 @@ struct ContentView: View {
 
     private func createAlarm(time: Date) {
         let newAlarm = Alarm(time: time)
-        alarmStorage.alarm = newAlarm
+        alarmStorage.addAlarm(newAlarm)
         // 通知をスケジュール
         NotificationManager.shared.scheduleAlarm(for: newAlarm)
         showSetAlarm = false
     }
 
-    private func toggleAlarm() {
-        alarmStorage.updateAlarm { alarm in
+    private func toggleAlarm(id: UUID) {
+        alarmStorage.updateAlarm(id: id) { alarm in
             alarm.isEnabled.toggle()
 
             if alarm.isEnabled {
@@ -220,31 +234,37 @@ struct ContentView: View {
         }
     }
 
-    private func deleteAlarm() {
-        alarmStorage.deleteAlarm()
+    private func deleteAlarm(id: UUID) {
+        alarmStorage.deleteAlarm(id: id)
     }
 
     private func saveVoiceRecording(url: URL) {
-        alarmStorage.updateAlarm { alarm in
+        guard let id = editingAlarmId else { return }
+        alarmStorage.updateAlarm(id: id) { alarm in
             alarm.voiceRecordingURL = url
         }
+        editingAlarmId = nil
     }
 
     private func saveQRCode(code: String) {
-        alarmStorage.updateAlarm { alarm in
+        guard let id = editingAlarmId else { return }
+        alarmStorage.updateAlarm(id: id) { alarm in
             alarm.qrCode = code
         }
+        editingAlarmId = nil
     }
 
     private func updateAlarmTime(newTime: Date) {
-        alarmStorage.updateAlarm { alarm in
+        guard let id = editingAlarmId else { return }
+        alarmStorage.updateAlarm(id: id) { alarm in
             alarm.time = newTime
         }
         // 通知を再スケジュール
-        if let alarm = alarmStorage.alarm, alarm.isEnabled {
+        if let alarm = alarmStorage.getAlarm(id: id), alarm.isEnabled {
             NotificationManager.shared.scheduleAlarm(for: alarm)
         }
         showEditAlarm = false
+        editingAlarmId = nil
     }
 }
 
