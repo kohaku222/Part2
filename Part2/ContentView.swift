@@ -340,17 +340,26 @@ struct ContentView: View {
         editingAlarmId = nil
     }
 
-    // 録音を削除
+    // 録音を削除（アラームとの紐づけを解除）
     private func deleteVoiceRecording() {
         guard let id = editingAlarmId,
               let alarm = alarmStorage.getAlarm(id: id),
               let url = alarm.voiceRecordingURL else { return }
 
-        AudioManager.shared.deleteRecording(url: url)
+        // ライブラリに保存されていない録音のみファイルを削除
+        let fileName = url.lastPathComponent
+        let isInLibrary = SavedRecordingStorage.shared.findRecording(by: fileName) != nil
+        if !isInLibrary {
+            AudioManager.shared.deleteRecording(url: url)
+            print("録音ファイルを削除: \(url)")
+        } else {
+            print("ライブラリの録音なのでファイルは保持: \(fileName)")
+        }
+
+        // アラームとの紐づけを解除
         alarmStorage.updateAlarm(id: id) { alarm in
             alarm.voiceRecordingURL = nil
         }
-        print("録音を削除: \(url)")
         editingAlarmId = nil
     }
 
