@@ -165,6 +165,8 @@ struct SavedCodeRow: View {
     var onEdit: () -> Void
     var onDelete: () -> Void
 
+    @State private var showActionSheet = false
+
     var body: some View {
         HStack(spacing: 12) {
             // アイコン
@@ -200,25 +202,22 @@ struct SavedCodeRow: View {
             Spacer()
 
             // 操作ボタン
-            Menu {
-                Button(action: onSelect) {
-                    Label("このコードを使用", systemImage: "checkmark.circle")
-                }
-                Button(action: onEdit) {
-                    Label("名前を変更", systemImage: "pencil")
-                }
-                Button(role: .destructive, action: onDelete) {
-                    Label("削除", systemImage: "trash")
-                }
-            } label: {
+            Button(action: { showActionSheet = true }) {
                 Image(systemName: "ellipsis.circle")
                     .font(.system(size: 22))
                     .foregroundColor(.gray)
             }
+            .buttonStyle(.plain)
         }
         .contentShape(Rectangle())
         .onTapGesture {
             onSelect()
+        }
+        .confirmationDialog("操作を選択", isPresented: $showActionSheet, titleVisibility: .visible) {
+            Button("このコードを使用", action: onSelect)
+            Button("名前を変更", action: onEdit)
+            Button("削除", role: .destructive, action: onDelete)
+            Button("キャンセル", role: .cancel) {}
         }
     }
 }
