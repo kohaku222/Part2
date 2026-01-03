@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4D71AD492F09871100A50DC4 /* VolumeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D71AD482F09871100A50DC4 /* VolumeManager.swift */; };
 		4D7CEF742EF693E200FC721D /* Part2App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7CEF732EF693E200FC721D /* Part2App.swift */; };
 		4D7CEF762EF693E200FC721D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7CEF752EF693E200FC721D /* ContentView.swift */; };
 		4D7CEF782EF693E400FC721D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4D7CEF772EF693E400FC721D /* Assets.xcassets */; };
@@ -51,6 +52,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4D71AD482F09871100A50DC4 /* VolumeManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VolumeManager.swift; sourceTree = "<group>"; };
 		4D7CEF702EF693E200FC721D /* Part2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Part2.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4D7CEF732EF693E200FC721D /* Part2App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Part2App.swift; sourceTree = "<group>"; };
 		4D7CEF752EF693E200FC721D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -195,6 +197,7 @@
 		4D7D8DDB2EF6A8600075D61D /* Managers */ = {
 			isa = PBXGroup;
 			children = (
+				4D71AD482F09871100A50DC4 /* VolumeManager.swift */,
 				4DD2B3242EFC314E0046973F /* SavedRecordingStorage.swift */,
 				4D7D8DE32EF6F9300075D61D /* SavedCodeStorage.swift */,
 				4D7D8DD82EF6A8600075D61D /* AlarmStorage.swift */,
@@ -337,6 +340,7 @@
 			files = (
 				4D7D8DD42EF6A8510075D61D /* CodeScannerView.swift in Sources */,
 				4D7D8DD22EF6A8510075D61D /* AlarmCardView.swift in Sources */,
+				4D71AD492F09871100A50DC4 /* VolumeManager.swift in Sources */,
 				4D7CEF762EF693E200FC721D /* ContentView.swift in Sources */,
 				4D7D8DD72EF6A8510075D61D /* VoiceRecorderView.swift in Sources */,
 				4D7CEF742EF693E200FC721D /* Part2App.swift in Sources */,

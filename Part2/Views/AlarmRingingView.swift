@@ -16,9 +16,9 @@ struct AlarmRingingView: View {
     @State private var isAnimating = false
     @State private var showScanner = false
 
-    // アラーム音（SystemSound - 着信/通知音量で再生）
-    @State private var systemSoundID: SystemSoundID = 0
-    @State private var soundLoopTimer: Timer?
+    // アラーム音（AVAudioPlayer - メディア音量で再生、強制MAX）
+    @State private var audioPlayer: AVAudioPlayer?
+    @State private var vibrationTimer: Timer?
 
     var body: some View {
         ZStack {
@@ -112,7 +112,7 @@ struct AlarmRingingView: View {
     }
 
     private func playAlarmSound() {
-        // オーディオセッションを設定（バックグラウンド再生用）
+        // オーディオセッションを設定（メディア音量で再生）
         do {
             let audioSession = AVAudioSession.sharedInstance()
             try audioSession.setCategory(.playback, mode: .default, options: [])
@@ -122,33 +122,44 @@ struct AlarmRingingView: View {
             print("オーディオセッション設定エラー: \(error.localizedDescription)")
         }
 
-        // カスタム音声ファイルをSystemSoundとして登録（着信/通知音量で再生）
+        // 🔊 強制的に音量をMAXに設定（ユーザーが下げても即座に戻す）
+        VolumeManager.shared.startForceMaxVolume()
+
+        // AVAudioPlayerでメディア音量として再生
         if let url = Bundle.main.url(forResource: "alarm", withExtension: "mp3") {
-            AudioServicesCreateSystemSoundID(url as CFURL, &systemSoundID)
-
-            // 初回再生（音 + バイブレーション）
-            AudioServicesPlayAlertSound(systemSoundID)
-            AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
-            print("アラーム音再生開始（SystemSound - 着信/通知音量 + バイブ）")
-
-            // ループ再生（alarm.mp3の長さに合わせて調整 - 約15.4秒）
-            soundLoopTimer = Timer.scheduledTimer(withTimeInterval: 15.4, repeats: true) { [self] _ in
-                if isAnimating {
-                    AudioServicesPlayAlertSound(systemSoundID)
-                    AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
-                }
+            do {
+                audioPlayer = try AVAudioPlayer(contentsOf: url)
+                audioPlayer?.numberOfLoops = -1  // 無限ループ
+                audioPlayer?.volume = 1.0  // プレイヤー音量もMAX
+                audioPlayer?.play()
+                print("アラーム音再生開始（AVAudioPlayer - メディア音量MAX強制）")
+            } catch {
+                print("AVAudioPlayer作成エラー: \(error.localizedDescription)")
+                playSystemSoundLoop()
             }
         } else {
-            // フォールバック：システム音
             print("alarm.mp3が見つからないためシステム音を使用")
             playSystemSoundLoop()
+        }
+
+        // バイブレーションを定期的に実行
+        startVibration()
+    }
+
+    // バイブレーションを定期的に実行
+    private func startVibration() {
+        AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
+        vibrationTimer = Timer.scheduledTimer(withTimeInterval: 1.5, repeats: true) { _ in
+            if self.isAnimating {
+                AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
+            }
         }
     }
 
     // システム音を繰り返し再生（alarm.mp3がない場合のフォールバック）
     private func playSystemSoundLoop() {
         // 1秒ごとにシステム音 + バイブを鳴らす
-        soundLoopTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
+        vibrationTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
             if self.isAnimating {
                 AudioServicesPlayAlertSound(SystemSoundID(1005))
                 AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
@@ -160,15 +171,16 @@ struct AlarmRingingView: View {
 
     // 音声のみ停止（通知はキャンセルしない - タスクキル対策）
     private func stopAudioOnly() {
-        // ループタイマー停止
-        soundLoopTimer?.invalidate()
-        soundLoopTimer = nil
+        // 音声停止
+        audioPlayer?.stop()
+        audioPlayer = nil
 
-        // SystemSound解放
-        if systemSoundID != 0 {
-            AudioServicesDisposeSystemSoundID(systemSoundID)
-            systemSoundID = 0
-        }
+        // バイブレーションタイマー停止
+        vibrationTimer?.invalidate()
+        vibrationTimer = nil
+
+        // 🔊 強制音量MAX監視を停止（元の音量に戻す）
+        VolumeManager.shared.stopForceMaxVolume(restoreVolume: true)
 
         isAnimating = false
 

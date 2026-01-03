@@ -97,8 +97,10 @@ class NotificationManager: NSObject, ObservableObject, UNUserNotificationCenterD
         let content = UNMutableNotificationContent()
         content.title = "⏰ 起きまsho"
         content.body = label ?? "起きる時間です！"
-        content.sound = UNNotificationSound.default
+        // カスタムアラーム音を使用（タスクキルされても鳴る）
+        content.sound = UNNotificationSound(named: UNNotificationSoundName("alarm.mp3"))
         content.badge = 1
+        content.interruptionLevel = .timeSensitive  // 集中モードでも通知
 
         var dateComponents = DateComponents()
         dateComponents.hour = hour
@@ -162,8 +164,10 @@ class NotificationManager: NSObject, ObservableObject, UNUserNotificationCenterD
             let content = UNMutableNotificationContent()
             content.title = "⏰ 起きまsho (\(i)/60)"
             content.body = messages[i % messages.count]
-            content.sound = UNNotificationSound.default
+            // カスタムアラーム音を使用（タスクキルされても鳴る）
+            content.sound = UNNotificationSound(named: UNNotificationSoundName("alarm.mp3"))
             content.badge = NSNumber(value: i)
+            content.interruptionLevel = .timeSensitive  // 集中モードでも通知
 
             // アラーム時刻 + (i * 間隔) 秒後に通知
             let totalSecondsFromNow = secondsUntilAlarm + (Double(i) * intervalSeconds)
