@@ -15,6 +15,7 @@ struct Part2App: App {
 
     // モチベーション再生状態
     @State private var showMotivationPlayback = false
+    @State private var dismissedAlarmAudioURL: URL? = nil
 
     var body: some Scene {
         WindowGroup {
@@ -23,13 +24,16 @@ struct Part2App: App {
                     .environmentObject(notificationManager)
 
                 // アラーム鳴動画面（フルスクリーンオーバーレイ）
-                // isRingingがtrueならタスクキル後も表示
-                if alarmStorage.isRinging, let alarm = alarmStorage.alarm {
+                // ringingAlarmIdがあればタスクキル後も表示
+                if let alarm = alarmStorage.ringingAlarm {
                     AlarmRingingView(alarm: alarm) {
                         // アラームが正式に解除された時
+                        let hasVoice = alarm.hasVoiceRecording
+                        let voiceURL = alarm.voiceRecordingURL
                         alarmStorage.dismissAlarm()
                         // 音声が録音されている場合はモチベーション再生へ
-                        if alarm.hasVoiceRecording {
+                        if hasVoice, let url = voiceURL {
+                            dismissedAlarmAudioURL = url
                             showMotivationPlayback = true
                         }
                     }
@@ -39,10 +43,10 @@ struct Part2App: App {
 
                 // モチベーション再生画面
                 if showMotivationPlayback,
-                   let alarm = alarmStorage.alarm,
-                   let audioURL = alarm.voiceRecordingURL {
+                   let audioURL = dismissedAlarmAudioURL {
                     MotivationPlaybackView(audioURL: audioURL) {
                         showMotivationPlayback = false
+                        dismissedAlarmAudioURL = nil
                     }
                     .transition(.opacity)
                     .zIndex(2)
@@ -58,9 +62,15 @@ struct Part2App: App {
                     print("アプリ起動: 未解除のアラームがあります")
                 }
             }
-            .onReceive(NotificationCenter.default.publisher(for: .alarmTriggered)) { _ in
+            .onReceive(NotificationCenter.default.publisher(for: .alarmTriggered)) { notification in
                 // アラームがトリガーされた時 - 状態を保存
-                alarmStorage.triggerAlarm()
+                if let alarmId = notification.userInfo?["alarmId"] as? String,
+                   let uuid = UUID(uuidString: alarmId) {
+                    alarmStorage.triggerAlarm(id: uuid)
+                } else if let firstAlarm = alarmStorage.alarms.first(where: { $0.isEnabled }) {
+                    // フォールバック: 有効な最初のアラームを鳴動
+                    alarmStorage.triggerAlarm(id: firstAlarm.id)
+                }
             }
         }
     }
