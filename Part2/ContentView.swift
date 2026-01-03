@@ -88,7 +88,7 @@ struct ContentView: View {
             SetAlarmView(onSave: createAlarm)
         }
         .sheet(isPresented: $showRecordVoice) {
-            VoiceRecorderView(existingURL: alarmStorage.alarm?.voiceRecordingURL) { url in
+            SavedRecordingListView { url in
                 saveVoiceRecording(url: url)
             }
         }

@@ -28,6 +28,9 @@
 		4D7D8DE42EF6F9300075D61D /* SavedCodeStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7D8DE32EF6F9300075D61D /* SavedCodeStorage.swift */; };
 		4D7D8DE62EF6F9420075D61D /* SavedCodeListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7D8DE52EF6F9420075D61D /* SavedCodeListView.swift */; };
 		4DD2B3212EFC2B8B0046973F /* alarm.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 4DD2B3202EFC2B8B0046973F /* alarm.mp3 */; };
+		4DD2B3232EFC313D0046973F /* SavedRecording.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DD2B3222EFC313D0046973F /* SavedRecording.swift */; };
+		4DD2B3252EFC314E0046973F /* SavedRecordingStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DD2B3242EFC314E0046973F /* SavedRecordingStorage.swift */; };
+		4DD2B3272EFC31590046973F /* SavedRecordingListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DD2B3262EFC31590046973F /* SavedRecordingListView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -73,6 +76,9 @@
 		4D7D8DE32EF6F9300075D61D /* SavedCodeStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SavedCodeStorage.swift; sourceTree = "<group>"; };
 		4D7D8DE52EF6F9420075D61D /* SavedCodeListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SavedCodeListView.swift; sourceTree = "<group>"; };
 		4DD2B3202EFC2B8B0046973F /* alarm.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = alarm.mp3; sourceTree = SOURCE_ROOT; };
+		4DD2B3222EFC313D0046973F /* SavedRecording.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SavedRecording.swift; sourceTree = "<group>"; };
+		4DD2B3242EFC314E0046973F /* SavedRecordingStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SavedRecordingStorage.swift; sourceTree = "<group>"; };
+		4DD2B3262EFC31590046973F /* SavedRecordingListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SavedRecordingListView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -164,6 +170,7 @@
 		4D7D8DC92EF6A8430075D61D /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				4DD2B3222EFC313D0046973F /* SavedRecording.swift */,
 				4D7D8DE12EF6F91F0075D61D /* SavedCode.swift */,
 				4D7D8DC82EF6A8430075D61D /* Alarm.swift */,
 			);
@@ -173,6 +180,7 @@
 		4D7D8DD12EF6A8510075D61D /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				4DD2B3262EFC31590046973F /* SavedRecordingListView.swift */,
 				4D7D8DE52EF6F9420075D61D /* SavedCodeListView.swift */,
 				4D7D8DCB2EF6A8510075D61D /* AlarmCardView.swift */,
 				4D7D8DCC2EF6A8510075D61D /* AlarmRingingView.swift */,
@@ -187,6 +195,7 @@
 		4D7D8DDB2EF6A8600075D61D /* Managers */ = {
 			isa = PBXGroup;
 			children = (
+				4DD2B3242EFC314E0046973F /* SavedRecordingStorage.swift */,
 				4D7D8DE32EF6F9300075D61D /* SavedCodeStorage.swift */,
 				4D7D8DD82EF6A8600075D61D /* AlarmStorage.swift */,
 				4D7D8DD92EF6A8600075D61D /* AudioManager.swift */,
@@ -337,10 +346,13 @@
 				4D7D8DCA2EF6A8430075D61D /* Alarm.swift in Sources */,
 				4D7D8DDC2EF6A8600075D61D /* AlarmStorage.swift in Sources */,
 				4D7D8DE22EF6F91F0075D61D /* SavedCode.swift in Sources */,
+				4DD2B3252EFC314E0046973F /* SavedRecordingStorage.swift in Sources */,
+				4DD2B3272EFC31590046973F /* SavedRecordingListView.swift in Sources */,
 				4D7D8DD32EF6A8510075D61D /* AlarmRingingView.swift in Sources */,
 				4D7D8DDE2EF6A8600075D61D /* NotificationManager.swift in Sources */,
 				4D7D8DD62EF6A8510075D61D /* TimeDisplayView.swift in Sources */,
 				4D7D8DD52EF6A8510075D61D /* MotivationPlaybackView.swift in Sources */,
+				4DD2B3232EFC313D0046973F /* SavedRecording.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
