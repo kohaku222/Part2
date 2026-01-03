@@ -27,14 +27,24 @@ class NotificationManager: NSObject, ObservableObject, UNUserNotificationCenterD
         willPresent notification: UNNotification,
         withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
     ) {
-        // アラーム画面を表示
-        DispatchQueue.main.async {
-            NotificationCenter.default.post(name: .alarmTriggered, object: nil)
+        let storage = AlarmStorage.shared
+
+        // アラームが鳴動中、または最近解除された場合は再トリガーしない
+        // （残りの繰り返し通知が来ても無視する）
+        if storage.isRinging {
+            print("アラーム鳴動中のため再トリガーをスキップ")
+        } else if storage.wasRecentlyDismissed {
+            print("最近解除されたため再トリガーをスキップ")
+        } else {
+            // 新しいアラームをトリガー
+            DispatchQueue.main.async {
+                NotificationCenter.default.post(name: .alarmTriggered, object: nil)
+            }
+            print("アラームをトリガー")
         }
 
         // アプリがフォアグラウンドで動作中は常に通知を抑制（音もバナーも出さない）
         // タスクキル時はこのデリゲートが呼ばれないので、通知が表示される
-        print("フォアグラウンド動作中のため通知を抑制")
         completionHandler([])
     }
 
