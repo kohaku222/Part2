@@ -35,7 +35,8 @@ class NotificationManager: NSObject, ObservableObject, UNUserNotificationCenterD
         } else if storage.isConfiguring {
             print("設定画面を開いているためアラームをスキップ")
         } else {
-            // 新しいアラームをトリガー
+            // 新しいアラームをトリガー - 即座にアラーム音を開始
+            AlarmSoundPlayer.shared.startAlarm()
             DispatchQueue.main.async {
                 NotificationCenter.default.post(name: .alarmTriggered, object: nil)
             }
@@ -53,6 +54,8 @@ class NotificationManager: NSObject, ObservableObject, UNUserNotificationCenterD
         didReceive response: UNNotificationResponse,
         withCompletionHandler completionHandler: @escaping () -> Void
     ) {
+        // 即座にアラーム音を開始（View表示を待たない）
+        AlarmSoundPlayer.shared.startAlarm()
         // アラーム画面を表示
         DispatchQueue.main.async {
             NotificationCenter.default.post(name: .alarmTriggered, object: nil)
