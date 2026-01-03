@@ -13,11 +13,18 @@ struct ContentView: View {
 
     @State private var showSetAlarm = false
     @State private var showEditAlarm = false
-    @State private var showRecordVoice = false
     @State private var showQRScanner = false
 
     // 編集中のアラームIDを追跡
     @State private var editingAlarmId: UUID? = nil
+
+    // 録音UX改善: 選択シート・アクションシート用状態
+    @State private var showVoiceActionSheet = false      // 未録音時の選択
+    @State private var showRecordedActionSheet = false   // 録音済み時の選択
+    @State private var showDirectRecorder = false        // 新規録音（名前なし）
+    @State private var showRecordingLibrary = false      // ライブラリから選択
+    @State private var showSaveToLibraryDialog = false   // ライブラリ保存ダイアログ
+    @State private var recordingNameInput = ""           // 保存時の名前入力
 
     var body: some View {
         ZStack {
@@ -69,7 +76,11 @@ struct ContentView: View {
                                     onDelete: { deleteAlarm(id: alarm.id) },
                                     onRecordVoice: {
                                         editingAlarmId = alarm.id
-                                        showRecordVoice = true
+                                        if alarm.hasVoiceRecording {
+                                            showRecordedActionSheet = true   // 録音済み → 管理メニュー
+                                        } else {
+                                            showVoiceActionSheet = true      // 未録音 → 新規/選択
+                                        }
                                     },
                                     onSetupQR: {
                                         editingAlarmId = alarm.id
@@ -100,7 +111,14 @@ struct ContentView: View {
         .sheet(isPresented: $showSetAlarm) {
             SetAlarmView(onSave: createAlarm)
         }
-        .sheet(isPresented: $showRecordVoice) {
+        .sheet(isPresented: $showDirectRecorder) {
+            // 新規録音（名前なしで直接アラームに紐づける）
+            VoiceRecorderView(existingURL: editingAlarmVoiceURL) { url in
+                saveVoiceRecording(url: url)
+            }
+        }
+        .sheet(isPresented: $showRecordingLibrary) {
+            // ライブラリから選択
             SavedRecordingListView { url in
                 saveVoiceRecording(url: url)
             }
@@ -116,16 +134,61 @@ struct ContentView: View {
                 EditAlarmView(currentTime: alarm.time, onSave: updateAlarmTime)
             }
         }
+        // 未録音時の選択シート
+        .confirmationDialog("録音方法を選択", isPresented: $showVoiceActionSheet, titleVisibility: .visible) {
+            Button("新規録音") {
+                showDirectRecorder = true
+            }
+            Button("保存済みから選択") {
+                showRecordingLibrary = true
+            }
+            Button("キャンセル", role: .cancel) {}
+        }
+        // 録音済み時のアクションシート
+        .confirmationDialog("録音の管理", isPresented: $showRecordedActionSheet, titleVisibility: .visible) {
+            Button("再録音") {
+                showDirectRecorder = true
+            }
+            Button("ライブラリに保存") {
+                recordingNameInput = ""
+                showSaveToLibraryDialog = true
+            }
+            Button("別の録音を選択") {
+                showRecordingLibrary = true
+            }
+            Button("削除", role: .destructive) {
+                deleteVoiceRecording()
+            }
+            Button("キャンセル", role: .cancel) {}
+        }
+        // ライブラリ保存ダイアログ
+        .alert("ライブラリに保存", isPresented: $showSaveToLibraryDialog) {
+            TextField("録音の名前", text: $recordingNameInput)
+            Button("保存") {
+                saveCurrentRecordingToLibrary()
+            }
+            Button("キャンセル", role: .cancel) {}
+        } message: {
+            Text("この録音に名前をつけて保存します")
+        }
         // 設定画面が開いている間はアラームをスキップ
         .onChange(of: isAnySheetPresented) { _, isPresented in
             alarmStorage.isConfiguring = isPresented
-            print("設定画面状態: \(isPresented ? "開いている" : "閉じた")")
+            print("設定画面状態: \(isPresented ? \"開いている\" : \"閉じた\")")
         }
+    }
+
+    // 編集中アラームの録音URL
+    private var editingAlarmVoiceURL: URL? {
+        guard let id = editingAlarmId else { return nil }
+        return alarmStorage.getAlarm(id: id)?.voiceRecordingURL
     }
 
     // いずれかの設定画面が開いているかどうか
     private var isAnySheetPresented: Bool {
-        showSetAlarm || showEditAlarm || showRecordVoice || showQRScanner
+        showSetAlarm || showEditAlarm || showDirectRecorder ||
+        showRecordingLibrary || showQRScanner ||
+        showVoiceActionSheet || showRecordedActionSheet
     }
 
     // MARK: - Views
@@ -274,6 +337,46 @@ struct ContentView: View {
             NotificationManager.shared.scheduleAlarm(for: alarm)
         }
         showEditAlarm = false
+        editingAlarmId = nil
+    }
+
+    // 録音を削除
+    private func deleteVoiceRecording() {
+        guard let id = editingAlarmId,
+              let alarm = alarmStorage.getAlarm(id: id),
+              let url = alarm.voiceRecordingURL else { return }
+
+        AudioManager.shared.deleteRecording(url: url)
+        alarmStorage.updateAlarm(id: id) { alarm in
+            alarm.voiceRecordingURL = nil
+        }
+        print("録音を削除: \(url)")
+        editingAlarmId = nil
+    }
+
+    // 現在の録音をライブラリに保存
+    private func saveCurrentRecordingToLibrary() {
+        guard let id = editingAlarmId,
+              let alarm = alarmStorage.getAlarm(id: id),
+              let url = alarm.voiceRecordingURL else {
+            editingAlarmId = nil
+            return
+        }
+
+        // 既にライブラリに存在するか確認
+        let fileName = url.lastPathComponent
+        if SavedRecordingStorage.shared.findRecording(by: fileName) != nil {
+            print("既にライブラリに保存されています: \(fileName)")
+            editingAlarmId = nil
+            return
+        }
+
+        // 録音時間を取得
+        let duration = AudioManager.shared.getAudioDuration(url: url)
+        let name = recordingNameInput.isEmpty ? "録音 \(SavedRecordingStorage.shared.savedRecordings.count + 1)" : recordingNameInput
+
+        _ = SavedRecordingStorage.shared.addRecording(name: name, url: url, duration: duration)
+        print("ライブラリに保存: \(name)")
         editingAlarmId = nil
     }
 }

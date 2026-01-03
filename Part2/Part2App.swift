@@ -17,6 +17,11 @@ struct Part2App: App {
     @State private var showMotivationPlayback = false
     @State private var dismissedAlarmAudioURL: URL? = nil
 
+    // ライブラリ保存確認
+    @State private var showSaveToLibraryPrompt = false
+    @State private var recordingToSaveURL: URL? = nil
+    @State private var recordingSaveName = ""
+
     var body: some Scene {
         WindowGroup {
             ZStack {
@@ -46,11 +51,25 @@ struct Part2App: App {
                    let audioURL = dismissedAlarmAudioURL {
                     MotivationPlaybackView(audioURL: audioURL) {
                         showMotivationPlayback = false
+                        // ライブラリに未保存の場合は保存確認を表示
+                        checkAndPromptToSave(url: audioURL)
                         dismissedAlarmAudioURL = nil
                     }
                     .transition(.opacity)
                     .zIndex(2)
                 }
+            }
+            .alert("ライブラリに保存しますか？", isPresented: $showSaveToLibraryPrompt) {
+                TextField("録音の名前", text: $recordingSaveName)
+                Button("保存") {
+                    saveRecordingToLibrary()
+                }
+                Button("保存しない", role: .cancel) {
+                    recordingToSaveURL = nil
+                    recordingSaveName = ""
+                }
+            } message: {
+                Text("この録音をライブラリに保存して再利用できるようにしますか？")
             }
             .animation(.easeInOut, value: alarmStorage.isRinging)
             .animation(.easeInOut, value: showMotivationPlayback)
@@ -73,6 +92,36 @@ struct Part2App: App {
                 }
             }
         }
+    }
+
+    // 録音がライブラリに未保存かチェックして保存確認を表示
+    private func checkAndPromptToSave(url: URL) {
+        let fileName = url.lastPathComponent
+        // 既にライブラリに保存されている場合はスキップ
+        if SavedRecordingStorage.shared.findRecording(by: fileName) != nil {
+            print("この録音は既にライブラリに保存されています")
+            return
+        }
+        // 保存確認を表示
+        recordingToSaveURL = url
+        recordingSaveName = ""
+        showSaveToLibraryPrompt = true
+    }
+
+    // 録音をライブラリに保存
+    private func saveRecordingToLibrary() {
+        guard let url = recordingToSaveURL else { return }
+
+        let duration = AudioManager.shared.getAudioDuration(url: url)
+        let name = recordingSaveName.isEmpty
+            ? "録音 \(SavedRecordingStorage.shared.savedRecordings.count + 1)"
+            : recordingSaveName
+
+        _ = SavedRecordingStorage.shared.addRecording(name: name, url: url, duration: duration)
+        print("ライブラリに保存: \(name)")
+
+        recordingToSaveURL = nil
+        recordingSaveName = ""
     }
 }
 

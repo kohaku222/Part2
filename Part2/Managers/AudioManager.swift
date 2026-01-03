@@ -134,6 +134,18 @@ class AudioManager: NSObject, ObservableObject {
         }
     }
 
+    // MARK: - オーディオの長さを取得
+
+    func getAudioDuration(url: URL) -> TimeInterval {
+        do {
+            let player = try AVAudioPlayer(contentsOf: url)
+            return player.duration
+        } catch {
+            print("オーディオ長さ取得エラー: \(error.localizedDescription)")
+            return 0
+        }
+    }
+
     // MARK: - 録音時間のフォーマット
 
     func formatTime(_ time: TimeInterval) -> String {
