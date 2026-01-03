@@ -174,7 +174,7 @@ struct ContentView: View {
         // 設定画面が開いている間はアラームをスキップ
         .onChange(of: isAnySheetPresented) { _, isPresented in
             alarmStorage.isConfiguring = isPresented
-            print("設定画面状態: \(isPresented ? \"開いている\" : \"閉じた\")")
+            print("設定画面状態: \(isPresented ? "開いている" : "閉じた")")
         }
     }
 
