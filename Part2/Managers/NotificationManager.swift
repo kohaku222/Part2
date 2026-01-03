@@ -108,7 +108,8 @@ class NotificationManager: NSObject, ObservableObject, UNUserNotificationCenterD
         content.title = "⏰ 起きまsho"
         content.body = label ?? "起きる時間です！"
         // カスタムアラーム音を使用（タスクキルされても鳴る）
-        content.sound = UNNotificationSound(named: UNNotificationSoundName("alarm.mp3"))
+        // CAF形式はiOSの通知音として最も安定して再生される
+        content.sound = UNNotificationSound(named: UNNotificationSoundName("alarm.caf"))
         content.badge = 1
         content.interruptionLevel = .timeSensitive  // 集中モードでも通知
 
@@ -175,7 +176,8 @@ class NotificationManager: NSObject, ObservableObject, UNUserNotificationCenterD
             content.title = "⏰ 起きまsho (\(i)/60)"
             content.body = messages[i % messages.count]
             // カスタムアラーム音を使用（タスクキルされても鳴る）
-            content.sound = UNNotificationSound(named: UNNotificationSoundName("alarm.mp3"))
+            // CAF形式はiOSの通知音として最も安定して再生される
+            content.sound = UNNotificationSound(named: UNNotificationSoundName("alarm.caf"))
             content.badge = NSNumber(value: i)
             content.interruptionLevel = .timeSensitive  // 集中モードでも通知
 

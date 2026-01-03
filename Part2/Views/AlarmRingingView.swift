@@ -125,8 +125,8 @@ struct AlarmRingingView: View {
         // 🔊 強制的に音量をMAXに設定（ユーザーが下げても即座に戻す）
         VolumeManager.shared.startForceMaxVolume()
 
-        // AVAudioPlayerでメディア音量として再生
-        if let url = Bundle.main.url(forResource: "alarm", withExtension: "mp3") {
+        // AVAudioPlayerでメディア音量として再生（CAF形式を使用）
+        if let url = Bundle.main.url(forResource: "alarm", withExtension: "caf") {
             do {
                 audioPlayer = try AVAudioPlayer(contentsOf: url)
                 audioPlayer?.numberOfLoops = -1  // 無限ループ
@@ -138,7 +138,7 @@ struct AlarmRingingView: View {
                 playSystemSoundLoop()
             }
         } else {
-            print("alarm.mp3が見つからないためシステム音を使用")
+            print("alarm.cafが見つからないためシステム音を使用")
             playSystemSoundLoop()
         }
 
@@ -156,7 +156,7 @@ struct AlarmRingingView: View {
         }
     }
 
-    // システム音を繰り返し再生（alarm.mp3がない場合のフォールバック）
+    // システム音を繰り返し再生（alarm.cafがない場合のフォールバック）
     private func playSystemSoundLoop() {
         // 1秒ごとにシステム音 + バイブを鳴らす
         vibrationTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
