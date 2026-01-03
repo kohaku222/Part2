@@ -116,6 +116,16 @@ struct ContentView: View {
                 EditAlarmView(currentTime: alarm.time, onSave: updateAlarmTime)
             }
         }
+        // 設定画面が開いている間はアラームをスキップ
+        .onChange(of: isAnySheetPresented) { _, isPresented in
+            alarmStorage.isConfiguring = isPresented
+            print("設定画面状態: \(isPresented ? "開いている" : "閉じた")")
+        }
+    }
+
+    // いずれかの設定画面が開いているかどうか
+    private var isAnySheetPresented: Bool {
+        showSetAlarm || showEditAlarm || showRecordVoice || showQRScanner
     }
 
     // MARK: - Views
