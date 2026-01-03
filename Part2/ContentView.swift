@@ -29,6 +29,10 @@ struct ContentView: View {
     @State private var alarmToDeleteId: UUID? = nil      // 削除対象のアラームID
     @State private var recordingNameInput = ""           // 保存時の名前入力
 
+    // QRコード管理用状態
+    @State private var showQRCodeActionSheet = false     // QR設定済み時のアクションシート
+    @State private var showDeleteQRConfirm = false       // QR削除確認
+
     var body: some View {
         ZStack {
             // 背景グラデーション
@@ -90,7 +94,11 @@ struct ContentView: View {
                                     },
                                     onSetupQR: {
                                         editingAlarmId = alarm.id
-                                        showQRScanner = true
+                                        if alarm.hasQRCode {
+                                            showQRCodeActionSheet = true  // QR設定済み → 管理メニュー
+                                        } else {
+                                            showQRScanner = true          // QR未設定 → 選択画面
+                                        }
                                     },
                                     onEditTime: {
                                         editingAlarmId = alarm.id
@@ -200,6 +208,25 @@ struct ContentView: View {
         } message: {
             Text(deleteAlarmConfirmMessage)
         }
+        // QRコード設定済み時のアクションシート
+        .confirmationDialog("QRコードの管理", isPresented: $showQRCodeActionSheet, titleVisibility: .visible) {
+            Button("別のコードを選択") {
+                showQRScanner = true
+            }
+            Button("設定を解除", role: .destructive) {
+                showDeleteQRConfirm = true
+            }
+            Button("キャンセル", role: .cancel) {}
+        }
+        // QRコード削除確認ダイアログ
+        .alert("QRコードの設定を解除", isPresented: $showDeleteQRConfirm) {
+            Button("解除", role: .destructive) {
+                deleteQRCode()
+            }
+            Button("キャンセル", role: .cancel) {}
+        } message: {
+            Text("このアラームからQRコードの設定を解除しますか？\nアラーム解除時にQRスキャンが不要になります。")
+        }
         // 設定画面が開いている間はアラームをスキップ
         .onChange(of: isAnySheetPresented) { _, isPresented in
             alarmStorage.isConfiguring = isPresented
@@ -253,7 +280,8 @@ struct ContentView: View {
     private var isAnySheetPresented: Bool {
         showSetAlarm || showEditAlarm || showDirectRecorder ||
         showRecordingLibrary || showQRScanner ||
-        showVoiceActionSheet || showRecordedActionSheet
+        showVoiceActionSheet || showRecordedActionSheet ||
+        showQRCodeActionSheet
     }
 
     // MARK: - Views
@@ -388,6 +416,15 @@ struct ContentView: View {
         guard let id = editingAlarmId else { return }
         alarmStorage.updateAlarm(id: id) { alarm in
             alarm.qrCode = code
+        }
+        editingAlarmId = nil
+    }
+
+    // QRコードの設定を解除
+    private func deleteQRCode() {
+        guard let id = editingAlarmId else { return }
+        alarmStorage.updateAlarm(id: id) { alarm in
+            alarm.qrCode = nil
         }
         editingAlarmId = nil
     }
