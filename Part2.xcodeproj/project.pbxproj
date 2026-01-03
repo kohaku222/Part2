@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4DA1A2A3A4A5A6A700000001 /* AlarmSoundPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DA1A2A3A4A5A6A700000002 /* AlarmSoundPlayer.swift */; };
 		4D71AD492F09871100A50DC4 /* VolumeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D71AD482F09871100A50DC4 /* VolumeManager.swift */; };
 		4D71AD4F2F09A42000A50DC4 /* alarm.caf in Resources */ = {isa = PBXBuildFile; fileRef = 4D71AD4E2F09A42000A50DC4 /* alarm.caf */; };
 		4D7CEF742EF693E200FC721D /* Part2App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7CEF732EF693E200FC721D /* Part2App.swift */; };
@@ -52,6 +53,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4DA1A2A3A4A5A6A700000002 /* AlarmSoundPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmSoundPlayer.swift; sourceTree = "<group>"; };
 		4DE0E1E2E3E4E5E600000001 /* Part2.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Part2.entitlements; sourceTree = "<group>"; };
 		4D71AD482F09871100A50DC4 /* VolumeManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VolumeManager.swift; sourceTree = "<group>"; };
 		4D71AD4E2F09A42000A50DC4 /* alarm.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = alarm.caf; path = ../../Part2.worktrees/Part2_sub2/Part2/alarm.caf; sourceTree = "<group>"; };
@@ -199,6 +201,7 @@
 		4D7D8DDB2EF6A8600075D61D /* Managers */ = {
 			isa = PBXGroup;
 			children = (
+				4DA1A2A3A4A5A6A700000002 /* AlarmSoundPlayer.swift */,
 				4D71AD482F09871100A50DC4 /* VolumeManager.swift */,
 				4DD2B3242EFC314E0046973F /* SavedRecordingStorage.swift */,
 				4D7D8DE32EF6F9300075D61D /* SavedCodeStorage.swift */,
@@ -340,6 +343,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4DA1A2A3A4A5A6A700000001 /* AlarmSoundPlayer.swift in Sources */,
 				4D7D8DD42EF6A8510075D61D /* CodeScannerView.swift in Sources */,
 				4D7D8DD22EF6A8510075D61D /* AlarmCardView.swift in Sources */,
 				4D71AD492F09871100A50DC4 /* VolumeManager.swift in Sources */,
