@@ -12,7 +12,6 @@ class AlarmStorage: ObservableObject {
 
     private let key = "savedAlarms"
     private let ringingKey = "ringingAlarmId"
-    private let dismissedKey = "dismissedAlarmTime"
 
     @Published var alarms: [Alarm] = [] {
         didSet {
@@ -32,17 +31,6 @@ class AlarmStorage: ObservableObject {
         }
     }
 
-    // 最後にアラームを解除した時刻（再トリガー防止用）
-    private var lastDismissedAt: Date? {
-        didSet {
-            if let date = lastDismissedAt {
-                UserDefaults.standard.set(date, forKey: dismissedKey)
-            } else {
-                UserDefaults.standard.removeObject(forKey: dismissedKey)
-            }
-        }
-    }
-
     // 鳴動中のアラームを取得
     var ringingAlarm: Alarm? {
         guard let id = ringingAlarmId else { return nil }
@@ -57,15 +45,6 @@ class AlarmStorage: ObservableObject {
     // 設定画面を開いているかどうか（設定中はアラームをスキップ）
     @Published var isConfiguring = false
 
-    // 最近アラームを解除したかどうか（1分以内）
-    // 残りの繰り返し通知が来ても再トリガーしないため
-    // 注: 繰り返し通知は15秒間隔なので1分あれば十分
-    var wasRecentlyDismissed: Bool {
-        guard let dismissedAt = lastDismissedAt else { return false }
-        let elapsed = Date().timeIntervalSince(dismissedAt)
-        return elapsed < 60  // 1分以内
-    }
-
     private init() {
         loadAlarms()
         // 鳴動状態を復元
@@ -74,14 +53,10 @@ class AlarmStorage: ObservableObject {
             ringingAlarmId = id
             print("前回のアラームが未解除です: \(idString)")
         }
-        // 解除時刻を復元
-        lastDismissedAt = UserDefaults.standard.object(forKey: dismissedKey) as? Date
     }
 
     // MARK: - アラーム発火
     func triggerAlarm(id: UUID) {
-        // 新しいアラームがトリガーされたら、解除時刻をリセット
-        lastDismissedAt = nil
         ringingAlarmId = id
     }
 
@@ -91,8 +66,6 @@ class AlarmStorage: ObservableObject {
             NotificationManager.shared.cancelAlarm(id: id.uuidString)
         }
         ringingAlarmId = nil
-        // 解除時刻を記録（残りの通知が来ても再トリガーしないため）
-        lastDismissedAt = Date()
         NotificationManager.shared.clearBadge()
         print("アラームを正式に解除しました")
     }

@@ -29,13 +29,11 @@ class NotificationManager: NSObject, ObservableObject, UNUserNotificationCenterD
     ) {
         let storage = AlarmStorage.shared
 
-        // アラームが鳴動中、設定中、または最近解除された場合は再トリガーしない
+        // アラームが鳴動中、または設定中の場合は再トリガーしない
         if storage.isRinging {
             print("アラーム鳴動中のため再トリガーをスキップ")
         } else if storage.isConfiguring {
             print("設定画面を開いているためアラームをスキップ")
-        } else if storage.wasRecentlyDismissed {
-            print("最近解除されたため再トリガーをスキップ")
         } else {
             // 新しいアラームをトリガー
             DispatchQueue.main.async {
