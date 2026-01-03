@@ -32,16 +32,10 @@ class NotificationManager: NSObject, ObservableObject, UNUserNotificationCenterD
             NotificationCenter.default.post(name: .alarmTriggered, object: nil)
         }
 
-        // アプリがフォアグラウンドで動作中（アラーム画面表示中）は通知を抑制
-        // タスクキルされた場合のみ通知が表示される
-        if AlarmStorage.shared.isRinging {
-            // アラーム画面が表示されているので、通知は不要（音もバナーも出さない）
-            print("フォアグラウンド動作中のため通知を抑制")
-            completionHandler([])
-        } else {
-            // アラームが開始された最初の通知のみ表示
-            completionHandler([.banner, .sound, .badge])
-        }
+        // アプリがフォアグラウンドで動作中は常に通知を抑制（音もバナーも出さない）
+        // タスクキル時はこのデリゲートが呼ばれないので、通知が表示される
+        print("フォアグラウンド動作中のため通知を抑制")
+        completionHandler([])
     }
 
     // 通知をタップした時
