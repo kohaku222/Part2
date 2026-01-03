@@ -57,12 +57,13 @@ class AlarmStorage: ObservableObject {
     // 設定画面を開いているかどうか（設定中はアラームをスキップ）
     @Published var isConfiguring = false
 
-    // 最近アラームを解除したかどうか（30分以内）
+    // 最近アラームを解除したかどうか（1分以内）
     // 残りの繰り返し通知が来ても再トリガーしないため
+    // 注: 繰り返し通知は15秒間隔なので1分あれば十分
     var wasRecentlyDismissed: Bool {
         guard let dismissedAt = lastDismissedAt else { return false }
         let elapsed = Date().timeIntervalSince(dismissedAt)
-        return elapsed < 30 * 60  // 30分以内
+        return elapsed < 60  // 1分以内
     }
 
     private init() {
