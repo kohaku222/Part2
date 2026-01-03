@@ -35,9 +35,14 @@ struct SavedRecordingListView: View {
                                 recording: recording,
                                 isPlaying: playingRecordingId == recording.id && audioManager.isPlaying,
                                 onSelect: {
+                                    print("SavedRecordingRow onSelect called for: \(recording.name)")
+                                    print("recording.fileURL: \(recording.fileURL?.absoluteString ?? "nil")")
                                     if let url = recording.fileURL {
+                                        print("Calling onSelect with url: \(url)")
                                         onSelect(url)
                                         dismiss()
+                                    } else {
+                                        print("ERROR: fileURL is nil!")
                                     }
                                 },
                                 onPlay: {
