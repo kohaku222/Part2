@@ -135,9 +135,13 @@ class AlarmStorage: ObservableObject {
     func deleteAlarm(id: UUID) {
         if let index = alarms.firstIndex(where: { $0.id == id }) {
             let alarm = alarms[index]
-            // 録音ファイルも削除
+            // 録音ファイルを削除（ライブラリに保存されていない場合のみ）
             if let url = alarm.voiceRecordingURL {
-                AudioManager.shared.deleteRecording(url: url)
+                let fileName = url.lastPathComponent
+                let isInLibrary = SavedRecordingStorage.shared.findRecording(by: fileName) != nil
+                if !isInLibrary {
+                    AudioManager.shared.deleteRecording(url: url)
+                }
             }
             // 通知をキャンセル
             NotificationManager.shared.cancelAlarm(id: alarm.id.uuidString)

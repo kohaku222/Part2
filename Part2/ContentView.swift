@@ -24,6 +24,9 @@ struct ContentView: View {
     @State private var showDirectRecorder = false        // 新規録音（名前なし）
     @State private var showRecordingLibrary = false      // ライブラリから選択
     @State private var showSaveToLibraryDialog = false   // ライブラリ保存ダイアログ
+    @State private var showDeleteVoiceConfirm = false    // 録音削除確認
+    @State private var showDeleteAlarmConfirm = false    // アラーム削除確認
+    @State private var alarmToDeleteId: UUID? = nil      // 削除対象のアラームID
     @State private var recordingNameInput = ""           // 保存時の名前入力
 
     var body: some View {
@@ -73,7 +76,10 @@ struct ContentView: View {
                                 AlarmCardView(
                                     alarm: alarm,
                                     onToggle: { toggleAlarm(id: alarm.id) },
-                                    onDelete: { deleteAlarm(id: alarm.id) },
+                                    onDelete: {
+                                        alarmToDeleteId = alarm.id
+                                        showDeleteAlarmConfirm = true
+                                    },
                                     onRecordVoice: {
                                         editingAlarmId = alarm.id
                                         if alarm.hasVoiceRecording {
@@ -157,7 +163,7 @@ struct ContentView: View {
                 showRecordingLibrary = true
             }
             Button("削除", role: .destructive) {
-                deleteVoiceRecording()
+                showDeleteVoiceConfirm = true
             }
             Button("キャンセル", role: .cancel) {}
         }
@@ -171,6 +177,29 @@ struct ContentView: View {
         } message: {
             Text("この録音に名前をつけて保存します")
         }
+        // 録音削除確認ダイアログ
+        .alert("録音を削除", isPresented: $showDeleteVoiceConfirm) {
+            Button("削除", role: .destructive) {
+                deleteVoiceRecording()
+            }
+            Button("キャンセル", role: .cancel) {}
+        } message: {
+            Text(deleteVoiceConfirmMessage)
+        }
+        // アラーム削除確認ダイアログ
+        .alert("アラームを削除", isPresented: $showDeleteAlarmConfirm) {
+            Button("削除", role: .destructive) {
+                if let id = alarmToDeleteId {
+                    deleteAlarm(id: id)
+                }
+                alarmToDeleteId = nil
+            }
+            Button("キャンセル", role: .cancel) {
+                alarmToDeleteId = nil
+            }
+        } message: {
+            Text(deleteAlarmConfirmMessage)
+        }
         // 設定画面が開いている間はアラームをスキップ
         .onChange(of: isAnySheetPresented) { _, isPresented in
             alarmStorage.isConfiguring = isPresented
@@ -182,6 +211,42 @@ struct ContentView: View {
     private var editingAlarmVoiceURL: URL? {
         guard let id = editingAlarmId else { return nil }
         return alarmStorage.getAlarm(id: id)?.voiceRecordingURL
+    }
+
+    // 録音削除確認メッセージ
+    private var deleteVoiceConfirmMessage: String {
+        guard let url = editingAlarmVoiceURL else {
+            return "この録音をアラームから削除しますか？"
+        }
+        let fileName = url.lastPathComponent
+        let isInLibrary = SavedRecordingStorage.shared.findRecording(by: fileName) != nil
+        if isInLibrary {
+            return "この録音をアラームから削除しますか？\nライブラリには残ります。"
+        } else {
+            return "この録音をアラームから削除しますか？\n\n⚠️ この録音はライブラリに保存されていないため、完全に削除されます。"
+        }
+    }
+
+    // アラーム削除確認メッセージ
+    private var deleteAlarmConfirmMessage: String {
+        guard let id = alarmToDeleteId,
+              let alarm = alarmStorage.getAlarm(id: id) else {
+            return "このアラームを削除しますか？"
+        }
+
+        // 録音がない場合
+        guard let url = alarm.voiceRecordingURL else {
+            return "このアラームを削除しますか？"
+        }
+
+        // 録音がある場合、ライブラリに保存されているかチェック
+        let fileName = url.lastPathComponent
+        let isInLibrary = SavedRecordingStorage.shared.findRecording(by: fileName) != nil
+        if isInLibrary {
+            return "このアラームを削除しますか？\n設定されている録音はライブラリに残ります。"
+        } else {
+            return "このアラームを削除しますか？\n\n⚠️ 設定されている録音はライブラリに保存されていないため、一緒に削除されます。"
+        }
     }
 
     // いずれかの設定画面が開いているかどうか
