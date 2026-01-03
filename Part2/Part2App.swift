@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import AVFoundation
 
 @main
 struct Part2App: App {
@@ -46,7 +47,13 @@ struct Part2App: App {
                             dismissedAlarmAudioURL = url
                             showMotivationPlayback = true
                         } else {
-                            print("⚠️ 音声なし、またはURLがnil")
+                            print("⚠️ 音声なし、またはURLがnil - セッション終了")
+                            // モチベーション再生がないのでここでセッション終了
+                            do {
+                                try AVAudioSession.sharedInstance().setActive(false)
+                            } catch {
+                                print("⚠️ セッション非アクティブ化エラー: \(error.localizedDescription)")
+                            }
                         }
                     }
                     .transition(.opacity)

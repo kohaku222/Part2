@@ -89,7 +89,9 @@ class AlarmSoundPlayer: NSObject, ObservableObject {
 
     // MARK: - 完全停止
 
-    func stopAlarm() {
+    /// アラーム音を停止する
+    /// - Parameter deactivateSession: trueの場合、オーディオセッションも非アクティブにする（デフォルトfalse）
+    func stopAlarm(deactivateSession: Bool = false) {
         audioPlayer?.stop()
         audioPlayer = nil
 
@@ -100,11 +102,14 @@ class AlarmSoundPlayer: NSObject, ObservableObject {
 
         isPlaying = false
 
-        // オーディオセッションを非アクティブに
-        do {
-            try AVAudioSession.sharedInstance().setActive(false)
-        } catch {
-            print("オーディオセッション停止エラー: \(error.localizedDescription)")
+        // 明示的に指定された場合のみセッションを非アクティブに
+        // （モチベーション再生に移行する場合はセッションを維持する必要がある）
+        if deactivateSession {
+            do {
+                try AVAudioSession.sharedInstance().setActive(false)
+            } catch {
+                print("オーディオセッション停止エラー: \(error.localizedDescription)")
+            }
         }
 
         print("⏹ アラーム完全停止")

@@ -114,6 +114,12 @@ struct MotivationPlaybackView: View {
         }
         .onDisappear {
             audioManager.stopPlaying()
+            // モチベーション再生終了後、セッションを非アクティブに
+            do {
+                try AVAudioSession.sharedInstance().setActive(false)
+            } catch {
+                print("⚠️ セッション非アクティブ化エラー: \(error.localizedDescription)")
+            }
         }
     }
 
@@ -121,7 +127,8 @@ struct MotivationPlaybackView: View {
         if audioManager.isPlaying {
             audioManager.stopPlaying()
         } else {
-            audioManager.startPlaying(url: audioURL)
+            // 再生再開時もplaybackセッションを維持
+            audioManager.startPlaying(url: audioURL, skipSessionSetup: true)
         }
     }
 
@@ -136,8 +143,8 @@ struct MotivationPlaybackView: View {
             print("⚠️ オーディオセッション設定エラー: \(error.localizedDescription)")
         }
 
-        // 即座に再生
-        audioManager.startPlaying(url: audioURL)
+        // 即座に再生（セッション設定済みなのでスキップ）
+        audioManager.startPlaying(url: audioURL, skipSessionSetup: true)
         print("🎵 再生開始: \(audioURL.lastPathComponent)")
     }
 }

@@ -101,15 +101,22 @@ class AudioManager: NSObject, ObservableObject {
 
     // MARK: - 再生開始
 
-    func startPlaying(url: URL) {
-        setupAudioSession()
+    /// 音声ファイルを再生する
+    /// - Parameters:
+    ///   - url: 再生する音声ファイルのURL
+    ///   - skipSessionSetup: trueの場合、オーディオセッションの設定をスキップ（外部で設定済みの場合）
+    func startPlaying(url: URL, skipSessionSetup: Bool = false) {
+        if !skipSessionSetup {
+            setupAudioSession()
+        }
 
         do {
             audioPlayer = try AVAudioPlayer(contentsOf: url)
             audioPlayer?.delegate = self
+            audioPlayer?.volume = 1.0
             audioPlayer?.play()
             isPlaying = true
-            print("再生開始: \(url)")
+            print("再生開始: \(url.lastPathComponent)")
         } catch {
             print("再生開始エラー: \(error.localizedDescription)")
         }
