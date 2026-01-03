@@ -13,12 +13,15 @@ struct CodeScannerView: View {
 
     var isSetup: Bool // true: 登録モード, false: 解除モード
     var registeredCode: String? // 登録済みのコード（解除モード時に使用）
+    var timeLimit: TimeInterval? // 制限時間（秒）、nilの場合は制限なし
     var onScan: (String, String) -> Void  // (code, codeType)
 
     @State private var scannedCode: String?
     @State private var scannedCodeType: String = ""
     @State private var showError = false
     @State private var errorMessage = ""
+    @State private var remainingTime: TimeInterval = 0
+    @State private var countdownTimer: Timer?
 
     var body: some View {
         ZStack {
@@ -27,7 +30,32 @@ struct CodeScannerView: View {
                 .ignoresSafeArea()
 
             // オーバーレイ
-            VStack {
+            VStack(spacing: 0) {
+                // 制限時間プログレスバー
+                if let limit = timeLimit {
+                    VStack(spacing: 4) {
+                        GeometryReader { geometry in
+                            ZStack(alignment: .leading) {
+                                Rectangle()
+                                    .fill(Color.white.opacity(0.3))
+                                    .frame(height: 4)
+
+                                Rectangle()
+                                    .fill(remainingTime > 10 ? Color.white : Color.red)
+                                    .frame(width: geometry.size.width * (remainingTime / limit), height: 4)
+                                    .animation(.linear(duration: 0.1), value: remainingTime)
+                            }
+                        }
+                        .frame(height: 4)
+
+                        Text("残り \(Int(remainingTime))秒")
+                            .font(.caption)
+                            .foregroundColor(remainingTime > 10 ? .white : .red)
+                    }
+                    .padding(.top, 50)
+                    .padding(.horizontal, 20)
+                }
+
                 // キャンセルボタン
                 HStack {
                     Button(action: { dismiss() }) {
@@ -109,6 +137,24 @@ struct CodeScannerView: View {
             Button("OK", role: .cancel) {}
         } message: {
             Text(errorMessage)
+        }
+        .onAppear {
+            if let limit = timeLimit {
+                remainingTime = limit
+                countdownTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+                    if remainingTime > 0 {
+                        remainingTime -= 1
+                    } else {
+                        countdownTimer?.invalidate()
+                        countdownTimer = nil
+                        dismiss()
+                    }
+                }
+            }
+        }
+        .onDisappear {
+            countdownTimer?.invalidate()
+            countdownTimer = nil
         }
     }
 }
@@ -241,7 +287,7 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
 }
 
 #Preview {
-    CodeScannerView(isSetup: true, registeredCode: nil) { code, codeType in
+    CodeScannerView(isSetup: true, registeredCode: nil, timeLimit: nil) { code, codeType in
         print("Scanned: \(code), Type: \(codeType)")
     }
 }

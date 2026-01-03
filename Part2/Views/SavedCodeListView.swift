@@ -69,7 +69,8 @@ struct SavedCodeListView: View {
             .sheet(isPresented: $showScanner) {
                 CodeScannerView(
                     isSetup: true,
-                    registeredCode: nil
+                    registeredCode: nil,
+                    timeLimit: nil
                 ) { code, codeType in
                     scannedCode = code
                     scannedCodeType = codeType
