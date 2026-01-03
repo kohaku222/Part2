@@ -73,11 +73,15 @@ class NotificationManager: NSObject, ObservableObject, UNUserNotificationCenterD
     // MARK: - 通知許可をリクエスト
 
     func requestAuthorization() {
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
+        // Critical Alertsを含む許可をリクエスト
+        // Critical Alertsはマナーモード/おやすみモード中でも最大音量で鳴る
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound, .criticalAlert]) { granted, error in
             DispatchQueue.main.async {
                 self.isAuthorized = granted
                 if let error = error {
                     print("通知許可エラー: \(error.localizedDescription)")
+                } else {
+                    print("通知許可: \(granted ? "許可" : "拒否")（Critical Alerts含む）")
                 }
             }
         }
@@ -110,11 +114,14 @@ class NotificationManager: NSObject, ObservableObject, UNUserNotificationCenterD
         let content = UNMutableNotificationContent()
         content.title = "⏰ 起きまsho"
         content.body = label ?? "起きる時間です！"
-        // カスタムアラーム音を使用（タスクキルされても鳴る）
-        // CAF形式はiOSの通知音として最も安定して再生される
-        content.sound = UNNotificationSound(named: UNNotificationSoundName("alarm.caf"))
+        // Critical Sound（緊急通知音）を使用
+        // マナーモード/おやすみモード中でも最大音量(1.0)で鳴る
+        content.sound = UNNotificationSound.criticalSoundNamed(
+            UNNotificationSoundName("alarm.caf"),
+            withAudioVolume: 1.0  // 最大音量
+        )
         content.badge = 1
-        content.interruptionLevel = .timeSensitive  // 集中モードでも通知
+        content.interruptionLevel = .critical  // 緊急通知（最優先）
 
         var dateComponents = DateComponents()
         dateComponents.hour = hour
@@ -178,11 +185,14 @@ class NotificationManager: NSObject, ObservableObject, UNUserNotificationCenterD
             let content = UNMutableNotificationContent()
             content.title = "⏰ 起きまsho (\(i)/60)"
             content.body = messages[i % messages.count]
-            // カスタムアラーム音を使用（タスクキルされても鳴る）
-            // CAF形式はiOSの通知音として最も安定して再生される
-            content.sound = UNNotificationSound(named: UNNotificationSoundName("alarm.caf"))
+            // Critical Sound（緊急通知音）を使用
+            // マナーモード/おやすみモード中でも最大音量(1.0)で鳴る
+            content.sound = UNNotificationSound.criticalSoundNamed(
+                UNNotificationSoundName("alarm.caf"),
+                withAudioVolume: 1.0  // 最大音量
+            )
             content.badge = NSNumber(value: i)
-            content.interruptionLevel = .timeSensitive  // 集中モードでも通知
+            content.interruptionLevel = .critical  // 緊急通知（最優先）
 
             // アラーム時刻 + (i * 間隔) 秒後に通知
             let totalSecondsFromNow = secondsUntilAlarm + (Double(i) * intervalSeconds)
